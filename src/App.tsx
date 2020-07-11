@@ -1,13 +1,6 @@
-import React, { useEffect } from 'react';
-import { useDispatch } from 'react-redux';
-import { init } from './actions';
+import React from 'react';
 
 function App() {
-  const dispatch = useDispatch();
-  useEffect(() => {
-    dispatch(init());
-  }, [dispatch]);
-
   return (
     <div>
       Hello.

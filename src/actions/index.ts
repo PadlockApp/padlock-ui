@@ -1,6 +1,5 @@
 import './types';
 import {
-    INIT,
     DB_CONNECTED,
     FFS_CONNECTED,
     FAILURE,
@@ -9,10 +8,6 @@ import {
     Failure,
     Ffs
 } from './types';
-
-export const init = () => ({
-    type: INIT
-});
 
 export const dbConnected = (db: object): DbConnected => ({
     type: DB_CONNECTED,

@@ -1,5 +1,4 @@
-import { takeEvery, put } from 'redux-saga/effects';
-import { INIT } from './actions/types';
+import { fork, put } from 'redux-saga/effects';
 import { ffsConnected } from './actions';
 import { createPow } from "@textile/powergate-client";
 
@@ -17,7 +16,7 @@ function* init() {
 }
 
 function* saga() {
-    yield takeEvery(INIT, init);
+    yield fork(init);
 }
 
 export default saga;

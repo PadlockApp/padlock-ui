@@ -29,9 +29,6 @@ export type Ffs = {
     showAll: () => Promise<ffsTypes.CidInfo.AsObject[]>;
 };
 
-// initializing
-export const INIT = 'INIT';
-
 // ThreadDB instance connected
 export const DB_CONNECTED = 'DB_CONNECTED';
 
@@ -40,11 +37,6 @@ export const FFS_CONNECTED = 'FFS_CONNECTED';
 
 // encountered error
 export const FAILURE = 'FAILURE';
-
-// Init type
-export interface Init {
-    type: typeof INIT
-}
 
 // DbConnected type
 export interface DbConnected {
