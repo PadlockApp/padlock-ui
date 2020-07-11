@@ -1,7 +1,7 @@
 import { FAILURE, Failure } from '../actions/types'
-import { ReducedState } from './types';
+import { ErrorState } from './types';
 
-const errorReducer = (state: ReducedState, action: Failure) => {
+const errorReducer = (state: ErrorState = '', action: Failure) => {
     switch (action.type) {
         case FAILURE:
             return action.error.message;

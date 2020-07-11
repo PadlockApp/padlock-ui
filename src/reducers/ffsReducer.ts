@@ -1,7 +1,7 @@
 import { FFS_CONNECTED, FfsConnected } from '../actions/types'
-import { ReducedState } from './types';
+import { FfsState } from './types';
 
-const ffsReducer = (state: ReducedState, action: FfsConnected) => {
+const ffsReducer = (state: FfsState, action: FfsConnected) => {
     switch (action.type) {
         case FFS_CONNECTED:
             return action.ffs;
