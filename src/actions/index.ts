@@ -15,7 +15,6 @@ export const ffsConnected = (ffs: any): FfsConnected => ({
     ffs
 });
 
-// error occured
 export const failure = (error: Error): Failure => ({
     type: FAILURE,
     error
