@@ -1120,6 +1120,18 @@
   dependencies:
     "@hapi/hoek" "^8.3.0"
 
+"@improbable-eng/grpc-web-node-http-transport@^0.12.0":
+  version "0.12.0"
+  resolved "https://registry.yarnpkg.com/@improbable-eng/grpc-web-node-http-transport/-/grpc-web-node-http-transport-0.12.0.tgz#827138160d2f945620e103473042025529c00c8e"
+  integrity sha512-+Kjz+Dktfz5LKTZA9ZW/Vlww6HF9KaKz4x2mVe1O8CJdOP2WfzC+KY8L6EWMqVLrV4MvdBuQdSgDmvSJz+OGuA==
+
+"@improbable-eng/grpc-web@^0.12.0":
+  version "0.12.0"
+  resolved "https://registry.yarnpkg.com/@improbable-eng/grpc-web/-/grpc-web-0.12.0.tgz#9b10a7edf2a1d7672f8997e34a60e7b70e49738f"
+  integrity sha512-uJjgMPngreRTYPBuo6gswMj1gK39Wbqre/RgE0XnSDXJRg6ST7ZhuS53dFE6Vc2CX4jxgl+cO+0B3op8LA4Q0Q==
+  dependencies:
+    browser-headers "^0.4.0"
+
 "@jest/console@^24.7.1", "@jest/console@^24.9.0":
   version "24.9.0"
   resolved "https://registry.yarnpkg.com/@jest/console/-/console-24.9.0.tgz#79b1bc06fb74a8cfb01cbdedf945584b1b9707f0"
@@ -1428,6 +1440,23 @@
     "@svgr/plugin-svgo" "^4.3.1"
     loader-utils "^1.2.3"
 
+"@textile/grpc-powergate-client@0.0.1-beta.13":
+  version "0.0.1-beta.13"
+  resolved "https://registry.yarnpkg.com/@textile/grpc-powergate-client/-/grpc-powergate-client-0.0.1-beta.13.tgz#91a872b8c4c1e38c26f2f3a65167a9c8b60741d0"
+  integrity sha512-ACYEOokCWkev1sxbZcTGFCPaUDpk95cOHnmKDXdCA2hS+qYdI0SJYVZXCmVkLQf2WQB8P6Losi+tc7Iw3A42dg==
+  dependencies:
+    "@improbable-eng/grpc-web" "^0.12.0"
+    "@types/google-protobuf" "^3.7.2"
+    google-protobuf "^3.12.2"
+
+"@textile/powergate-client@^0.1.0-beta.14":
+  version "0.1.0-beta.14"
+  resolved "https://registry.yarnpkg.com/@textile/powergate-client/-/powergate-client-0.1.0-beta.14.tgz#6a5a6462dfdd2470aecac672bedeea1c82c726dd"
+  integrity sha512-pPj9ddHdJ8lSsMZbt285gdujPtBJoJyLSeAIw9FwM0D6tngvJ5d0YgF+oiFjZijMF44klRYrujAtuDzWLqMO8A==
+  dependencies:
+    "@improbable-eng/grpc-web-node-http-transport" "^0.12.0"
+    "@textile/grpc-powergate-client" "0.0.1-beta.13"
+
 "@types/babel__core@^7.1.0":
   version "7.1.6"
   resolved "https://registry.yarnpkg.com/@types/babel__core/-/babel__core-7.1.6.tgz#16ff42a5ae203c9af1c6e190ed1f30f83207b610"
@@ -1484,6 +1513,11 @@
     "@types/events" "*"
     "@types/minimatch" "*"
     "@types/node" "*"
+
+"@types/google-protobuf@^3.7.2":
+  version "3.7.2"
+  resolved "https://registry.yarnpkg.com/@types/google-protobuf/-/google-protobuf-3.7.2.tgz#cd8a360c193ce4d672575a20a79f49ba036d38d2"
+  integrity sha512-ifFemzjNchFBCtHS6bZNhSZCBu7tbtOe0e8qY0z2J4HtFXmPJjm6fXSaQsTG7yhShBEZtt2oP/bkwu5k+emlkQ==
 
 "@types/hoist-non-react-statics@^3.3.0":
   version "3.3.1"
@@ -2459,6 +2493,11 @@ brorand@^1.0.1:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/brorand/-/brorand-1.1.0.tgz#12c25efe40a45e3c323eb8675a0a0ce57b22371f"
   integrity sha1-EsJe/kCkXjwyPrhnWgoM5XsiNx8=
+
+browser-headers@^0.4.0:
+  version "0.4.1"
+  resolved "https://registry.yarnpkg.com/browser-headers/-/browser-headers-0.4.1.tgz#4308a7ad3b240f4203dbb45acedb38dc2d65dd02"
+  integrity sha512-CA9hsySZVo9371qEHjHZtYxV2cFtVj5Wj/ZHi8ooEsrtm4vOnl9Y9HmyYWk9q+05d7K3rdoAE0j3MVEFVvtQtg==
 
 browser-process-hrtime@^1.0.0:
   version "1.0.0"
@@ -4799,6 +4838,11 @@ globby@^6.1.0:
     object-assign "^4.0.1"
     pify "^2.0.0"
     pinkie-promise "^2.0.0"
+
+google-protobuf@^3.12.2:
+  version "3.12.2"
+  resolved "https://registry.yarnpkg.com/google-protobuf/-/google-protobuf-3.12.2.tgz#50ce9f9b6281235724eb243d6a83e969a2176e53"
+  integrity sha512-4CZhpuRr1d6HjlyrxoXoocoGFnRYgKULgMtikMddA9ztRyYR59Aondv2FioyxWVamRo0rF2XpYawkTCBEQOSkA==
 
 graceful-fs@^4.1.11, graceful-fs@^4.1.15, graceful-fs@^4.1.2, graceful-fs@^4.1.6, graceful-fs@^4.2.0, graceful-fs@^4.2.2:
   version "4.2.3"
