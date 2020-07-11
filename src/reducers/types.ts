@@ -1,5 +1,5 @@
-export type DbState = any | null;
-export type FfsState = any | null;
+export type DbState = null;
+export type FfsState = null;
 export type ErrorState = string;
 
 export type State = { db: DbState, ffs: FfsState, error: ErrorState };

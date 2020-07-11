@@ -1,4 +1,4 @@
-import { takeEvery, call, all, put, select } from 'redux-saga/effects';
+import { takeEvery } from 'redux-saga/effects';
 import { INIT } from './actions/types';
 
 function* init() {
