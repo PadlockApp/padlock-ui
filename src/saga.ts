@@ -11,11 +11,22 @@ const {
     REACT_APP_DB_USER_API_SECRET,
 } = process.env;
 
+async function getIdentity() {
+    const cachedIdentity = localStorage.getItem('user-private-identity');
+    if (cachedIdentity !== null) {
+        return Libp2pCryptoIdentity.fromString(cachedIdentity);
+    }
+    const identity = await Libp2pCryptoIdentity.fromRandom();
+    localStorage.setItem('user-private-identity', identity.toString());
+    return identity;
+}
+
 function* init() {
     const pow = createPow({ host: REACT_APP_POW_HOST });
     pow.setToken(REACT_APP_POW_TOKEN as string);
     const { ffs } = pow;
     yield put(ffsConnected(ffs));
+
     const keyInfo: KeyInfo = {
         // Using insecure keys
         key: REACT_APP_DB_USER_API_KEY as string,
@@ -24,13 +35,13 @@ function* init() {
         type: 1,
     }
     const client: Client = yield Client.withKeyInfo(keyInfo);
-    // // const identity: Libp2pCryptoIdentity = yield Libp2pCryptoIdentity.fromRandom();
-    const id = 'bbaareyefldfqmbbvfd6es53zfrby2mtz2mjeney5xl3geme2oftvcjedsxw6abny3yywb73vyjtqigwkz53dqqnxizq3rm2uuncjqv4saez4n3paaw4n4mla7524ezyedlfm65ryig3umynywnkkgreyk6jacm6g';
-    // TODO: use MetaMask to generate identity
-    const identity: Libp2pCryptoIdentity = yield Libp2pCryptoIdentity.fromString(id);
-    // TODO: persist token in local storage
+    // TODO: use MetaMask to generate identity instead of Libp2pCryptoIdentity
+    const identity: Libp2pCryptoIdentity = yield getIdentity();
     const token: string = yield client.getToken(identity);
-    // const token: string = 'eyJhbGciOiJFZDI1NTE5IiwidHlwIjoiSldUIn0.eyJpYXQiOjE1OTQ1NTA2MDksImlzcyI6ImJiYWFyZWlnd2pvYXd1ZWc1a3ZobWMzNjI3Z3Zja2htZTd6emZlbnVqYXVqcHRodGd6Y21odHRvYTZ1Iiwic3ViIjoiYmJhYXJlaWhuNGFjM3J4cnJtZDd4bHF0aGFxbm12dDN3aGJhM29ydGJ4Y3p2amkyZXRibHplYWp0eXkifQ.EG3xEGUx8hulX7Gp17u0pFVutrekT_j58N-QTRWMcJaALail5H_aFxXzIkTAlO4xM571QkMOZBSrTch4GUuKBA';
+    const { listList: threads } = yield client.listThreads();
+    if (threads.length === 0) {
+        yield client.newDB();
+    }
     yield put(dbConnected(client));
 }
 
