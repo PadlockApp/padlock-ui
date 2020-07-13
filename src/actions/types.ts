@@ -1,4 +1,11 @@
 import { ffsTypes, ffsOptions } from "@textile/powergate-client";
+import { Client, ThreadID } from '@textile/hub';
+
+// Db type
+export type Db = Client;
+
+// Thread ID type
+export { ThreadID } from '@textile/hub';
 
 // FFS type
 export type Ffs = {
@@ -44,7 +51,8 @@ export const FAILURE = 'FAILURE';
 // DbConnected type
 export interface DbConnected {
     type: typeof DB_CONNECTED
-    db: object
+    db: Db
+    thread: ThreadID
 }
 
 // FfsConnected type

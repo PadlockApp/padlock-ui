@@ -4,6 +4,7 @@ import { createPow } from "@textile/powergate-client";
 import { Client, KeyInfo, ThreadID } from '@textile/hub';
 import { Libp2pCryptoIdentity } from '@textile/threads-core';
 import { SpaceClient } from '@fleekhq/space-client';
+import { FileSchema } from './schemas';
 
 const {
     REACT_APP_POW_HOST,
@@ -36,15 +37,22 @@ function* init() {
         // @ts-ignore
         type: 1,
     }
-    const client: Client = yield Client.withKeyInfo(keyInfo);
+    const db: Client = yield Client.withKeyInfo(keyInfo);
     // TODO: use MetaMask to generate identity instead of Libp2pCryptoIdentity
     const identity: Libp2pCryptoIdentity = yield getIdentity();
-    const token: string = yield client.getToken(identity);
-    const { listList: threads } = yield client.listThreads();
+    yield db.getToken(identity);
+    const { listList: threads } = yield db.listThreads();
     if (threads.length === 0) {
-        yield client.newDB();
+        yield db.newDB();
     }
-    yield put(dbConnected(client));
+    const threadId = (yield db.listThreads()).listList[0].id;
+    const thread: ThreadID = yield ThreadID.fromString(threadId as string);
+    try {
+        yield db?.getCollectionIndexes(thread, 'files')
+    } catch (e) {
+        yield db?.newCollection(thread, 'files', FileSchema);
+    }
+    yield put(dbConnected(db, thread));
 
     // default port exposed by the daemon for client connection is 9998
     const spaceClient = new SpaceClient({

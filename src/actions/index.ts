@@ -8,12 +8,15 @@ import {
     FfsConnected,
     SpaceDaemonConnected,
     Failure,
+    Db,
+    ThreadID,
     Ffs
 } from './types';
 
-export const dbConnected = (db: object): DbConnected => ({
+export const dbConnected = (db: Db, thread: ThreadID): DbConnected => ({
     type: DB_CONNECTED,
-    db
+    db,
+    thread
 });
 
 export const ffsConnected = (ffs: Ffs): FfsConnected => ({
