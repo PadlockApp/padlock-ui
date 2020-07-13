@@ -1,11 +1,13 @@
 import { fork, put } from 'redux-saga/effects';
-import { ffsConnected, dbConnected } from './actions';
+import { ffsConnected, dbConnected, spaceDaemonConnected } from './actions';
 import { createPow } from "@textile/powergate-client";
 import { Client, KeyInfo, ThreadID } from '@textile/hub';
 import { Libp2pCryptoIdentity } from '@textile/threads-core';
+import { SpaceClient } from '@fleekhq/space-client';
 
 const {
     REACT_APP_POW_HOST,
+    REACT_APP_SPACE_HOST,
     REACT_APP_POW_TOKEN,
     REACT_APP_DB_USER_API_KEY,
     REACT_APP_DB_USER_API_SECRET,
@@ -43,6 +45,12 @@ function* init() {
         yield client.newDB();
     }
     yield put(dbConnected(client));
+
+    // default port exposed by the daemon for client connection is 9998
+    const spaceClient = new SpaceClient({
+        url: REACT_APP_SPACE_HOST as string,
+    });
+    yield put(spaceDaemonConnected(spaceClient));
 }
 
 function* saga() {

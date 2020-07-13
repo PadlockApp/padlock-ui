@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@fleekhq/space-client": "^0.1.4",
     "@textile/hub": "^0.3.3",
     "@textile/powergate-client": "^0.1.0-beta.14",
     "@types/jest": "^24.0.0",
