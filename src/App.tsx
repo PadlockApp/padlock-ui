@@ -25,7 +25,10 @@ function App() {
     const arrayBuf = await file?.arrayBuffer();
     const { cid } = await ffs?.addToHot(Buffer.from(arrayBuf as ArrayBuffer)) as any;
     await ffs?.pushConfig(cid);
-    console.log()
+    ffs?.watchLogs((logEvent) => {
+      console.log(`received event for cid ${logEvent.cid}`);
+      console.log(logEvent);
+  }, cid);
 
     await db?.create(thread, 'files', [{ name: file?.name, cid }]);
     await updateFiles();
