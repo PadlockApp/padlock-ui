@@ -59,133 +59,138 @@ function App() {
         role="navigation"
         aria-label="main navigation"
       >
-        <div className="navbar-brand">
-          <a className="navbar-item">
-            <img
-              src="https://bulma.io/images/bulma-logo-white.png"
-              width="112"
-              height="28"
-            />
-          </a>
+        <div className="container">
+          <div className="navbar-brand">
+            <a className="navbar-item">
+              <img
+                src="https://bulma.io/images/bulma-logo-white.png"
+                width="112"
+                height="28"
+              />
+            </a>
 
-          <a
-            role="button"
-            className={`navbar-burger burger ${navExpanded ? 'is-active' : ''}`}
-            aria-label="menu"
-            aria-expanded={navExpanded}
-            data-target="nav-content"
-            onClick={toggleNavExpanded}
+            <a
+              role="button"
+              className={`navbar-burger burger ${
+                navExpanded ? 'is-active' : ''
+              }`}
+              aria-label="menu"
+              aria-expanded={navExpanded}
+              data-target="nav-content"
+              onClick={toggleNavExpanded}
+            >
+              <span aria-hidden="true"></span>
+              <span aria-hidden="true"></span>
+              <span aria-hidden="true"></span>
+            </a>
+          </div>
+          <div
+            id="nav-content"
+            className={`navbar-menu ${navExpanded ? 'is-active' : ''}`}
           >
-            <span aria-hidden="true"></span>
-            <span aria-hidden="true"></span>
-            <span aria-hidden="true"></span>
-          </a>
-        </div>
-        <div
-          id="nav-content"
-          className={`navbar-menu ${navExpanded ? 'is-active' : ''}`}
-        >
-          <div className="navbar-start">
-            <a className="navbar-item">View</a>
-            <a className="navbar-item is-active">Create</a>
+            <div className="navbar-start">
+              <a className="navbar-item">View</a>
+              <a className="navbar-item is-active">Create</a>
+            </div>
           </div>
         </div>
       </nav>
+
       <section className="section">
-        <div className="container">
-          <div className="field">
-            <label className="label">Title</label>
-            <div className="control has-icons-right">
-              <input
-                className={`input ${titleIsInvalid ? 'is-danger' : ''}`}
-                type="text"
-                placeholder="Title of your creation"
-              />
+        <div className="columns is-centered">
+          <div className="column is-half">
+            <div className="field">
+              <label className="label">Title</label>
+              <div className="control has-icons-right">
+                <input
+                  className={`input ${titleIsInvalid ? 'is-danger' : ''}`}
+                  type="text"
+                  placeholder="Title of your creation"
+                />
+                {titleIsInvalid && (
+                  <span className="icon is-small is-right">
+                    <i className="fas fa-exclamation-triangle"></i>
+                  </span>
+                )}
+              </div>
               {titleIsInvalid && (
-                <span className="icon is-small is-right">
-                  <i className="fas fa-exclamation-triangle"></i>
-                </span>
+                <p className="help is-danger">This title is invalid</p>
               )}
             </div>
-            {titleIsInvalid && (
-              <p className="help is-danger">This title is invalid</p>
-            )}
-          </div>
 
-          <div className="field">
-            <div className="file has-name is-fullwidth is-warning">
-              <label className="file-label">
-                <input
-                  className="file-input"
-                  type="file"
-                  onChange={(e) => setFile(e.target.files?.item(0))}
-                />
-                <span className="file-cta">
-                  <span className="file-icon">
-                    <i className="fas fa-upload"></i>
+            <div className="field">
+              <div className="file has-name is-fullwidth is-warning">
+                <label className="file-label">
+                  <input
+                    className="file-input"
+                    type="file"
+                    onChange={(e) => setFile(e.target.files?.item(0))}
+                  />
+                  <span className="file-cta">
+                    <span className="file-icon">
+                      <i className="fas fa-upload"></i>
+                    </span>
+                    <span className="file-label">Choose a file…</span>
                   </span>
-                  <span className="file-label">Choose a file…</span>
-                </span>
-                <span className="file-name">{file?.name && file?.name}</span>
-              </label>
-            </div>
-          </div>
-
-          <div className="field has-addons">
-            <p className="control">
-              <a className="button is-static">DAI</a>
-            </p>
-            <p className="control is-expanded">
-              <input
-                className="input"
-                type="text"
-                placeholder="How much would you charge for it?"
-              />
-            </p>
-          </div>
-
-          <div className="field">
-            <label className="label">Category</label>
-            <div className="control">
-              <div className="select  is-fullwidth">
-                <select>
-                  <option>Music</option>
-                  <option>Video</option>
-                  <option>Image</option>
-                </select>
+                  <span className="file-name">{file?.name && file?.name}</span>
+                </label>
               </div>
             </div>
-          </div>
 
-          <div className="field">
-            <label className="label">Description</label>
-            <div className="control">
-              <textarea
-                className="textarea"
-                placeholder="Tell us more about your creation.."
-              ></textarea>
+            <div className="field has-addons">
+              <p className="control">
+                <a className="button is-static">DAI</a>
+              </p>
+              <p className="control is-expanded">
+                <input
+                  className="input"
+                  type="text"
+                  placeholder="How much would you charge for it?"
+                />
+              </p>
             </div>
-          </div>
 
-          
-
-          <div className="field">
-            <div className="control">
-              <label className="checkbox">
-                <input type="checkbox" />
-                &nbsp; &nbsp;
-                <span>Creation contains</span>
-                &nbsp;
-                <a href="#">NSFW material</a>
-              </label>
+            <div className="field">
+              <label className="label">Category</label>
+              <div className="control">
+                <div className="select  is-fullwidth">
+                  <select>
+                    <option>Music</option>
+                    <option>Video</option>
+                    <option>Image</option>
+                  </select>
+                </div>
+              </div>
             </div>
-          </div>
 
-          <div className="field is-grouped">
-            <div className="control">
-              <button className="button is-link is-success">
-                Encrypt + Publish
-              </button>
+            <div className="field">
+              <label className="label">Description</label>
+              <div className="control">
+                <textarea
+                  className="textarea"
+                  placeholder="Tell us more about your creation.."
+                ></textarea>
+              </div>
+            </div>
+
+            <div className="field">
+              <div className="control">
+                <label className="checkbox">
+                  <input type="checkbox" />
+                  &nbsp; &nbsp;
+                  <span>Creation contains</span>
+                  &nbsp;
+                  <a href="#">NSFW material</a>
+                </label>
+              </div>
+            </div>
+
+            <div className="field is-grouped">
+              <div className="control">
+                <button className="button is-link is-success">
+                  Encrypt + Publish
+                </button>
+              </div>
             </div>
           </div>
         </div>
