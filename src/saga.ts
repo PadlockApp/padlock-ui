@@ -80,7 +80,7 @@ function* init() {
   // 3box
   const box = yield Box.create((window as any).ethereum);
   const address = (yield (window as any).ethereum.enable())[0];
-  yield box.auth([], { address });
+  yield box.auth(['Padlock'], { address });
   // Note: sometimes, openSpace returns early... caution
   const space = yield box.openSpace('Padlock');
   yield box.syncDone;

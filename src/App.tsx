@@ -67,6 +67,13 @@ function App() {
                 >
                   Create
                 </NavLink>
+                <NavLink
+                  to="/account"
+                  activeClassName="is-active"
+                  className="navbar-item"
+                >
+                  Account
+                </NavLink>
               </div>
             </div>
           </div>
@@ -74,6 +81,9 @@ function App() {
         <Switch>
           <Route path="/create">
             <Create />
+          </Route>
+          <Route path="/account">
+            <Account />
           </Route>
           <Route path="/discover"></Route>
           <Route path="/">
@@ -270,6 +280,51 @@ function Create() {
         </span>
         <span>Publish</span>
       </a> */}
+    </div>
+  );
+}
+
+function Account() {
+  // const ffs = useSelector((state: State) => state.ffs);
+  const nameIsInvalid = false;
+  return (
+    <div>
+      <section className="section">
+        <div className="columns is-centered">
+          <div className="column is-half">
+            <div className="field">
+              <label className="label">Name</label>
+              <div className="control has-icons-right">
+                <input
+                  className={`input ${nameIsInvalid ? 'is-danger' : ''}`}
+                  type="text"
+                  placeholder="Title of your creation"
+                  value="anonymous"
+                />
+                {nameIsInvalid && (
+                  <span className="icon is-small is-right">
+                    <i className="fas fa-exclamation-triangle"></i>
+                  </span>
+                )}
+              </div>
+              {nameIsInvalid && (
+                <p className="help is-danger">This name is invalid</p>
+              )}
+            </div>
+            <div className="field">
+              <label className="label">Your secret address</label>
+              <div className="control has-icons-right">
+                <input
+                  className={'input'}
+                  type="text"
+                  disabled={true}
+                  value="secret..."
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }
