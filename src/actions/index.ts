@@ -2,11 +2,9 @@ import './types';
 import {
   DB_CONNECTED,
   FFS_CONNECTED,
-  SPACEDAEMON_CONNECTED,
   FAILURE,
   DbConnected,
   FfsConnected,
-  SpaceDaemonConnected,
   Failure,
   Db,
   ThreadID,
@@ -29,13 +27,6 @@ export const secretConnected = (secretPubKey: string): SecretConnected => ({
 export const ffsConnected = (ffs: Ffs): FfsConnected => ({
   type: FFS_CONNECTED,
   ffs,
-});
-
-export const spaceDaemonConnected = (
-  spaceDaemon: object
-): SpaceDaemonConnected => ({
-  type: SPACEDAEMON_CONNECTED,
-  spaceDaemon,
 });
 
 export const failure = (error: Error): Failure => ({

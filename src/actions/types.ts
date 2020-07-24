@@ -70,9 +70,6 @@ export const SECRET_CONNECTED = 'SECRET_CONNECTED';
 // Powergate FFS instance connected
 export const FFS_CONNECTED = 'FFS_CONNECTED';
 
-// Space Daemon connected
-export const SPACEDAEMON_CONNECTED = 'SPACEDAEMON_CONNECTED';
-
 // encountered error
 export const FAILURE = 'FAILURE';
 
@@ -93,12 +90,6 @@ export interface SecretConnected {
 export interface FfsConnected {
   type: typeof FFS_CONNECTED;
   ffs: Ffs;
-}
-
-// spaceDaemonConnected type
-export interface SpaceDaemonConnected {
-  type: typeof SPACEDAEMON_CONNECTED;
-  spaceDaemon: object;
 }
 
 // Failure type

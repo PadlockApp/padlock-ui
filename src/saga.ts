@@ -2,13 +2,11 @@ import { fork, put } from 'redux-saga/effects';
 import {
   ffsConnected,
   dbConnected,
-  spaceDaemonConnected,
   secretConnected,
 } from './actions';
 import { createPow } from '@textile/powergate-client';
 import { Client, KeyInfo, ThreadID } from '@textile/hub';
 import { Libp2pCryptoIdentity } from '@textile/threads-core';
-import { SpaceClient } from '@fleekhq/space-client';
 import { FileSchema } from './schemas';
 import { encodeSecp256k1Pubkey, pubkeyToAddress, Secp256k1Pen } from 'secretjs';
 import { StdSignature } from 'secretjs/types/types';
@@ -18,7 +16,6 @@ import * as Box from '3box';
 
 const {
   REACT_APP_POW_HOST,
-  REACT_APP_SPACE_HOST,
   REACT_APP_POW_TOKEN,
   REACT_APP_DB_USER_API_KEY,
   REACT_APP_DB_USER_API_SECRET,
@@ -104,12 +101,6 @@ function* init() {
   // get secret wallet
   const secretWallet = yield getSecretWallet(space);
   yield put(secretConnected(secretWallet.address));
-
-  // default port exposed by the daemon for client connection is 9998
-  const spaceClient = new SpaceClient({
-    url: REACT_APP_SPACE_HOST as string,
-  });
-  yield put(spaceDaemonConnected(spaceClient));
 }
 
 function* saga() {

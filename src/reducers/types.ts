@@ -4,7 +4,6 @@ export type DbState = Db | null;
 export type SecretState = string | null;
 export type ThreadState = ThreadID | null;
 export type FfsState = Ffs | null;
-export type SpaceDaemonState = object | null;
 export type ErrorState = string;
 
 export type State = {
@@ -12,6 +11,5 @@ export type State = {
   secretWallet: SecretState;
   thread: ThreadState;
   ffs: FfsState;
-  spaceDaemon: SpaceDaemonState;
   error: ErrorState;
 };
