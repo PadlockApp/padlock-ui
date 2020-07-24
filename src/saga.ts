@@ -13,6 +13,8 @@ import { FileSchema } from './schemas';
 import { encodeSecp256k1Pubkey, pubkeyToAddress, Secp256k1Pen } from 'secretjs';
 import { StdSignature } from 'secretjs/types/types';
 import { Bip39, Random } from '@iov/crypto';
+//@ts-ignore
+import * as Box from '3box';
 
 const {
   REACT_APP_POW_HOST,
@@ -22,18 +24,18 @@ const {
   REACT_APP_DB_USER_API_SECRET,
 } = process.env;
 
-async function getIdentity() {
-  const cachedIdentity = localStorage.getItem('user-private-identity');
+async function getIdentity(space: any) {
+  const cachedIdentity = await space.private.get('user-private-identity');
   if (cachedIdentity !== null) {
     return Libp2pCryptoIdentity.fromString(cachedIdentity);
   }
   const identity = await Libp2pCryptoIdentity.fromRandom();
-  localStorage.setItem('user-private-identity', identity.toString());
+  await space.private.set('user-private-identity', identity.toString());
   return identity;
 }
 
-async function getSecretWallet() {
-  const cachedWallet = localStorage.getItem('user-secret-wallet');
+async function getSecretWallet(space: any) {
+  const cachedWallet = await space.private.get('user-secret-wallet');
   if (cachedWallet !== null) {
     const res = JSON.parse(cachedWallet);
     res.signer = eval(res.signer);
@@ -47,7 +49,7 @@ async function getSecretWallet() {
     pen.sign(signBytes);
 
   const wallet = { address, signer };
-  localStorage.setItem(
+  await space.private.set(
     'user-secret-wallet',
     JSON.stringify(wallet, function (key, value) {
       if (typeof value === 'function') {
@@ -74,8 +76,17 @@ function* init() {
     type: 1,
   };
   const db: Client = yield Client.withKeyInfo(keyInfo);
+
+  // 3box
+  const box = yield Box.create((window as any).ethereum);
+  const address = (yield (window as any).ethereum.enable())[0];
+  yield box.auth([], { address });
+  // Note: sometimes, openSpace returns early... caution
+  const space = yield box.openSpace('Padlock');
+  yield box.syncDone;
+
   // TODO: use MetaMask to generate identity instead of Libp2pCryptoIdentity
-  const identity: Libp2pCryptoIdentity = yield getIdentity();
+  const identity: Libp2pCryptoIdentity = yield getIdentity(space);
   yield db.getToken(identity);
   const { listList: threads } = yield db.listThreads();
   if (threads.length === 0) {
@@ -91,7 +102,7 @@ function* init() {
   yield put(dbConnected(db, thread));
 
   // get secret wallet
-  const secretWallet = yield getSecretWallet();
+  const secretWallet = yield getSecretWallet(space);
   yield put(secretConnected(secretWallet.address));
 
   // default port exposed by the daemon for client connection is 9998
