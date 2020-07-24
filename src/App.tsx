@@ -1,16 +1,95 @@
 import React, { useState, useEffect } from 'react';
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Redirect,
+  NavLink,
+} from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { State } from './reducers/types';
 import { ThreadID } from '@textile/hub';
 import { FileDocument } from './schemas';
 
 function App() {
+  const [navExpanded, setNavExpanded] = useState<boolean>(false);
+  const toggleNavExpanded = () => setNavExpanded(!navExpanded);
+
+  return (
+    <Router>
+      <div>
+        <nav
+          className="navbar is-danger"
+          role="navigation"
+          aria-label="main navigation"
+        >
+          <div className="container">
+            <div className="navbar-brand">
+              <a className="navbar-item">
+                <img
+                  src="https://bulma.io/images/bulma-logo-white.png"
+                  width="112"
+                  height="28"
+                />
+              </a>
+
+              <a
+                role="button"
+                className={`navbar-burger burger ${
+                  navExpanded ? 'is-active' : ''
+                }`}
+                aria-label="menu"
+                aria-expanded={navExpanded}
+                data-target="nav-content"
+                onClick={toggleNavExpanded}
+              >
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+              </a>
+            </div>
+            <div
+              id="nav-content"
+              className={`navbar-menu ${navExpanded ? 'is-active' : ''}`}
+            >
+              <div className="navbar-start">
+                <NavLink
+                  to="/discover"
+                  activeClassName="is-active"
+                  className="navbar-item"
+                >
+                  Discover
+                </NavLink>
+                <NavLink
+                  to="/create"
+                  activeClassName="is-active"
+                  className="navbar-item"
+                >
+                  Create
+                </NavLink>
+              </div>
+            </div>
+          </div>
+        </nav>
+        <Switch>
+          <Route path="/create">
+            <Create />
+          </Route>
+          <Route path="/discover"></Route>
+          <Route path="/">
+            <Redirect to="/create" />
+          </Route>
+        </Switch>
+      </div>
+    </Router>
+  );
+}
+
+function Create() {
   const ffs = useSelector((state: State) => state.ffs);
   const db = useSelector((state: State) => state.db);
   const thread = useSelector((state: State) => state.thread) as ThreadID;
 
-  const [navExpanded, setNavExpanded] = useState<boolean>(false);
-  const toggleNavExpanded = () => setNavExpanded(!navExpanded);
   const titleIsInvalid = false;
 
   const [file, setFile] = useState<File | null>();
@@ -54,48 +133,6 @@ function App() {
 
   return (
     <div>
-      <nav
-        className="navbar is-danger"
-        role="navigation"
-        aria-label="main navigation"
-      >
-        <div className="container">
-          <div className="navbar-brand">
-            <a className="navbar-item">
-              <img
-                src="https://bulma.io/images/bulma-logo-white.png"
-                width="112"
-                height="28"
-              />
-            </a>
-
-            <a
-              role="button"
-              className={`navbar-burger burger ${
-                navExpanded ? 'is-active' : ''
-              }`}
-              aria-label="menu"
-              aria-expanded={navExpanded}
-              data-target="nav-content"
-              onClick={toggleNavExpanded}
-            >
-              <span aria-hidden="true"></span>
-              <span aria-hidden="true"></span>
-              <span aria-hidden="true"></span>
-            </a>
-          </div>
-          <div
-            id="nav-content"
-            className={`navbar-menu ${navExpanded ? 'is-active' : ''}`}
-          >
-            <div className="navbar-start">
-              <a className="navbar-item">View</a>
-              <a className="navbar-item is-active">Create</a>
-            </div>
-          </div>
-        </div>
-      </nav>
-
       <section className="section">
         <div className="columns is-centered">
           <div className="column is-half">
