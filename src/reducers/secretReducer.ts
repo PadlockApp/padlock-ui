@@ -4,7 +4,7 @@ import { SecretState } from './types';
 const dbReducer = (state: SecretState = null, action: SecretConnected) => {
   switch (action.type) {
     case SECRET_CONNECTED:
-      return action.secretPubKey;
+      return action.secretPair;
     default:
       return state;
   }

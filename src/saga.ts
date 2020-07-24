@@ -3,6 +3,7 @@ import {
   ffsConnected,
   dbConnected,
   secretConnected,
+  spaceConnected,
 } from './actions';
 import { createPow } from '@textile/powergate-client';
 import { Client, KeyInfo, ThreadID } from '@textile/hub';
@@ -81,6 +82,7 @@ function* init() {
   // Note: sometimes, openSpace returns early... caution
   const space = yield box.openSpace('Padlock');
   yield box.syncDone;
+  yield put(spaceConnected(space));
 
   // TODO: use MetaMask to generate identity instead of Libp2pCryptoIdentity
   const identity: Libp2pCryptoIdentity = yield getIdentity(space);
@@ -100,7 +102,7 @@ function* init() {
 
   // get secret wallet
   const secretWallet = yield getSecretWallet(space);
-  yield put(secretConnected(secretWallet.address));
+  yield put(secretConnected(secretWallet));
 }
 
 function* saga() {

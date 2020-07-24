@@ -61,6 +61,9 @@ export type Ffs = {
   showAll: () => Promise<ffsTypes.CidInfo.AsObject[]>;
 };
 
+// 3Box space connected
+export const SPACE_CONNECTED = 'SPACE_CONNECTED';
+
 // ThreadDB instance connected
 export const DB_CONNECTED = 'DB_CONNECTED';
 
@@ -73,6 +76,12 @@ export const FFS_CONNECTED = 'FFS_CONNECTED';
 // encountered error
 export const FAILURE = 'FAILURE';
 
+// SpaceConnected type
+export interface SpaceConnected {
+  type: typeof SPACE_CONNECTED;
+  space: any;
+}
+
 // DbConnected type
 export interface DbConnected {
   type: typeof DB_CONNECTED;
@@ -83,7 +92,7 @@ export interface DbConnected {
 // SecretConnected type
 export interface SecretConnected {
   type: typeof SECRET_CONNECTED;
-  secretPubKey: string;
+  secretPair: any;
 }
 
 // FfsConnected type

@@ -285,21 +285,41 @@ function Create() {
 }
 
 function Account() {
-  // const ffs = useSelector((state: State) => state.ffs);
+  const space = useSelector((state: State) => state.space);
+  const secretPair = useSelector((state: State) => state.secretPair);
+
+  const [name, setName] = useState('Loading..');
+  const [secretAddress, setSecretAddress] = useState('Loading..');
+
+  useEffect(() => {
+    space?.public
+      .get('name')
+      .then((res: any) => setName(res ? res : 'anonymous'));
+  }, [space]);
   const nameIsInvalid = false;
+
+  const handleNameChange = (e: any) => {
+    setName(e.target.value);
+  };
+
+  const updateAccount = () => {
+    space?.public.set('name', name);
+  };
+
   return (
     <div>
       <section className="section">
         <div className="columns is-centered">
           <div className="column is-half">
             <div className="field">
-              <label className="label">Name</label>
+              <label className="label">Your account name</label>
               <div className="control has-icons-right">
                 <input
                   className={`input ${nameIsInvalid ? 'is-danger' : ''}`}
                   type="text"
-                  placeholder="Title of your creation"
-                  value="anonymous"
+                  placeholder="Your account name"
+                  value={name}
+                  onChange={handleNameChange}
                 />
                 {nameIsInvalid && (
                   <span className="icon is-small is-right">
@@ -318,8 +338,19 @@ function Account() {
                   className={'input'}
                   type="text"
                   disabled={true}
-                  value="secret..."
+                  value={secretPair?.address || 'Loading..'}
                 />
+              </div>
+            </div>
+
+            <div className="field is-grouped">
+              <div className="control">
+                <button
+                  className="button is-link is-success"
+                  onClick={updateAccount}
+                >
+                  Save changes
+                </button>
               </div>
             </div>
           </div>
