@@ -1,5 +1,9 @@
 import { ffsTypes, ffsOptions } from '@textile/powergate-client';
 import { Client, ThreadID } from '@textile/hub';
+import Web3Type from 'web3';
+
+// Web3 type
+export type Web3 = Web3Type;
 
 // Db type
 export type Db = Client;
@@ -61,6 +65,9 @@ export type Ffs = {
   showAll: () => Promise<ffsTypes.CidInfo.AsObject[]>;
 };
 
+// Web3 provider connected
+export const WEB3_CONNECTED = 'WEB3_CONNECTED';
+
 // 3Box space connected
 export const SPACE_CONNECTED = 'SPACE_CONNECTED';
 
@@ -75,6 +82,12 @@ export const FFS_CONNECTED = 'FFS_CONNECTED';
 
 // encountered error
 export const FAILURE = 'FAILURE';
+
+// Web3Connected type
+export interface Web3Connected {
+  type: typeof WEB3_CONNECTED;
+  web3: Web3;
+}
 
 // SpaceConnected type
 export interface SpaceConnected {

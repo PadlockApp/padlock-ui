@@ -1,5 +1,6 @@
 import './types';
 import {
+  WEB3_CONNECTED,
   SPACE_CONNECTED,
   DB_CONNECTED,
   FFS_CONNECTED,
@@ -7,17 +8,24 @@ import {
   DbConnected,
   FfsConnected,
   Failure,
+  Web3,
   Db,
   ThreadID,
   Ffs,
   SecretConnected,
   SECRET_CONNECTED,
   SpaceConnected,
+  Web3Connected,
 } from './types';
+
+export const web3Connected = (web3: Web3): Web3Connected => ({
+  type: WEB3_CONNECTED,
+  web3,
+});
 
 export const spaceConnected = (space: any): SpaceConnected => ({
   type: SPACE_CONNECTED,
-  space
+  space,
 });
 
 export const dbConnected = (db: Db, thread: ThreadID): DbConnected => ({

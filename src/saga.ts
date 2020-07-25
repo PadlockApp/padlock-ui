@@ -4,6 +4,7 @@ import {
   dbConnected,
   secretConnected,
   spaceConnected,
+  web3Connected,
 } from './actions';
 import { createPow } from '@textile/powergate-client';
 import { Client, KeyInfo, ThreadID } from '@textile/hub';
@@ -14,6 +15,32 @@ import { StdSignature } from 'secretjs/types/types';
 import { Bip39, Random } from '@iov/crypto';
 //@ts-ignore
 import * as Box from '3box';
+import Web3 from 'web3';
+
+const getWeb3 = () =>
+  new Promise((resolve, reject) => {
+    // Modern dapp browsers...
+    if ((window as any).ethereum) {
+      let web3 = new Web3((window as any).ethereum);
+      (window as any).ethereum
+        .enable()
+        .then(() => resolve(web3))
+        .catch(reject);
+    }
+    // Legacy dapp browsers...
+    else if ((window as any).web3) {
+      // Use browser's provider.
+      const provider = (window as any).web3.currentProvider;
+      const web3 = new Web3(provider);
+      resolve(web3);
+    }
+    // Fallback to localhost; use dev console port by default...
+    else {
+      const provider = new Web3.providers.HttpProvider('http://localhost:8545');
+      const web3 = new Web3(provider);
+      resolve(web3);
+    }
+  });
 
 const {
   REACT_APP_POW_HOST,
@@ -71,14 +98,22 @@ function* init() {
   };
   const db: Client = yield Client.withKeyInfo(keyInfo);
 
+  // web3 client
+  const web3 = (yield getWeb3()) as Web3;
+  yield put(web3Connected(web3));
+
   // 3box
-  const box = yield Box.create((window as any).ethereum);
-  const address = (yield (window as any).ethereum.enable())[0];
+  const box = yield Box.create(web3.currentProvider);
+  const address = (web3.currentProvider as any).selectedAddress;
   yield box.auth(['Padlock'], { address });
   // Note: sometimes, openSpace returns early... caution
   const space = yield box.openSpace('Padlock');
   yield box.syncDone;
   yield put(spaceConnected(space));
+
+  // get secret wallet
+  const secretWallet = yield getSecretWallet(space);
+  yield put(secretConnected(secretWallet));
 
   // TODO: use MetaMask to generate identity instead of Libp2pCryptoIdentity
   const identity: Libp2pCryptoIdentity = yield getIdentity(space);
@@ -95,10 +130,6 @@ function* init() {
     yield db?.newCollection(thread, 'files', FileSchema);
   }
   yield put(dbConnected(db, thread));
-
-  // get secret wallet
-  const secretWallet = yield getSecretWallet(space);
-  yield put(secretConnected(secretWallet));
 }
 
 function* saga() {
