@@ -35,9 +35,14 @@ async function getIdentity(space: any) {
 async function getSecretWallet(space: any) {
   const cachedWallet = await space.private.get('user-secret-wallet');
   if (cachedWallet !== null) {
-    const res = JSON.parse(cachedWallet);
-    res.signer = eval(res.signer);
-    return res;
+    const pen = await Secp256k1Pen.fromMnemonic(cachedWallet);
+    const pubkey = encodeSecp256k1Pubkey(pen.pubkey);
+    const address = pubkeyToAddress(pubkey, 'secret');
+    const signer = (signBytes: Uint8Array): Promise<StdSignature> =>
+      pen.sign(signBytes);
+
+    const wallet = { address, signer };
+    return wallet;
   }
   const mnemonic = Bip39.encode(Random.getBytes(16)).toString();
   const pen = await Secp256k1Pen.fromMnemonic(mnemonic);
@@ -47,16 +52,7 @@ async function getSecretWallet(space: any) {
     pen.sign(signBytes);
 
   const wallet = { address, signer };
-  await space.private.set(
-    'user-secret-wallet',
-    JSON.stringify(wallet, function (key, value) {
-      if (typeof value === 'function') {
-        return value.toString();
-      } else {
-        return value;
-      }
-    })
-  );
+  await space.private.set('user-secret-wallet', mnemonic);
   return wallet;
 }
 
