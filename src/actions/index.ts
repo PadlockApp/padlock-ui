@@ -1,6 +1,6 @@
 import './types';
 import {
-  WEB3_CONNECTED,
+  ETH_CONNECTED,
   SPACE_CONNECTED,
   DB_CONNECTED,
   FFS_CONNECTED,
@@ -9,18 +9,23 @@ import {
   FfsConnected,
   Failure,
   Web3,
+  Contract,
   Db,
   ThreadID,
   Ffs,
   SecretConnected,
   SECRET_CONNECTED,
   SpaceConnected,
-  Web3Connected,
+  EthConnected,
 } from './types';
 
-export const web3Connected = (web3: Web3): Web3Connected => ({
-  type: WEB3_CONNECTED,
+export const ethConnected = (
+  web3: Web3,
+  contract: Contract
+): EthConnected => ({
+  type: ETH_CONNECTED,
   web3,
+  contract,
 });
 
 export const spaceConnected = (space: any): SpaceConnected => ({

@@ -1,5 +1,5 @@
 import { combineReducers } from 'redux';
-import web3Reducer from './web3Reducer';
+import ethReducer from './ethReducer';
 import spaceReducer from './spaceReducer';
 import dbReducer from './dbReducer';
 import secretReducer from './secretReducer';
@@ -11,7 +11,7 @@ import { State } from './types';
 import { Action } from '../actions/types';
 
 const rootReducer: Reducer<State, Action> = combineReducers({
-  web3: web3Reducer,
+  eth: ethReducer,
   space: spaceReducer,
   db: dbReducer,
   secretPair: secretReducer,

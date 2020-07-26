@@ -4,7 +4,7 @@ import {
   dbConnected,
   secretConnected,
   spaceConnected,
-  web3Connected,
+  ethConnected,
 } from './actions';
 import { createPow } from '@textile/powergate-client';
 import { Client, KeyInfo, ThreadID } from '@textile/hub';
@@ -16,6 +16,8 @@ import { Bip39, Random } from '@iov/crypto';
 //@ts-ignore
 import * as Box from '3box';
 import Web3 from 'web3';
+import { AbiItem } from 'web3-utils';
+import abi from './abis/Contract.json';
 
 const getWeb3 = () =>
   new Promise((resolve, reject) => {
@@ -100,7 +102,11 @@ function* init() {
 
   // web3 client
   const web3 = (yield getWeb3()) as Web3;
-  yield put(web3Connected(web3));
+  const contract = new web3.eth.Contract(
+    abi as AbiItem[],
+    '0x61EE6FEFE8C6B859c139A4b87F2AB3084e7B4dE3'
+  );
+  yield put(ethConnected(web3, contract));
 
   // 3box
   const box = yield Box.create(web3.currentProvider);

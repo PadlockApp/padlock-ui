@@ -1,9 +1,13 @@
 import { ffsTypes, ffsOptions } from '@textile/powergate-client';
 import { Client, ThreadID } from '@textile/hub';
 import Web3Type from 'web3';
+import { Contract as ContractType } from 'web3-eth-contract';
 
 // Web3 type
 export type Web3 = Web3Type;
+
+// Contract type
+export type Contract = ContractType;
 
 // Db type
 export type Db = Client;
@@ -66,7 +70,7 @@ export type Ffs = {
 };
 
 // Web3 provider connected
-export const WEB3_CONNECTED = 'WEB3_CONNECTED';
+export const ETH_CONNECTED = 'ETH_CONNECTED';
 
 // 3Box space connected
 export const SPACE_CONNECTED = 'SPACE_CONNECTED';
@@ -83,10 +87,11 @@ export const FFS_CONNECTED = 'FFS_CONNECTED';
 // encountered error
 export const FAILURE = 'FAILURE';
 
-// Web3Connected type
-export interface Web3Connected {
-  type: typeof WEB3_CONNECTED;
+// EthConnected type
+export interface EthConnected {
+  type: typeof ETH_CONNECTED;
   web3: Web3;
+  contract: Contract;
 }
 
 // SpaceConnected type
