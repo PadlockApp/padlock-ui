@@ -8,8 +8,10 @@ import {
 } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { State } from './reducers/types';
-import { ThreadID } from '@textile/hub';
-import { FileDocument } from './schemas';
+import { Eth } from './helper';
+
+// import { ThreadID } from '@textile/hub';
+// import { FileDocument } from './schemas';
 
 function App() {
   const [navExpanded, setNavExpanded] = useState<boolean>(false);
@@ -97,22 +99,23 @@ function App() {
 
 function Create() {
   const ffs = useSelector((state: State) => state.ffs);
-  const db = useSelector((state: State) => state.db);
-  const thread = useSelector((state: State) => state.thread) as ThreadID;
+  // const db = useSelector((state: State) => state.db);
+  // const thread = useSelector((state: State) => state.thread) as ThreadID;
+  const eth = useSelector((state: State) => state.eth);
 
   const titleIsInvalid = false;
 
   const [file, setFile] = useState<File | null>();
-  const [cloudFiles, setCloudFiles] = useState<FileDocument[]>([]);
+  // const [cloudFiles, setCloudFiles] = useState<FileDocument[]>([]);
 
-  const updateFiles = async () => {
-    const files = (await db?.find(thread, 'files', {}))?.instancesList;
-    setCloudFiles(files as [FileDocument]);
-  };
+  // const updateFiles = async () => {
+  //   const files = (await db?.find(thread, 'files', {}))?.instancesList;
+  //   setCloudFiles(files as [FileDocument]);
+  // };
 
-  useEffect(() => {
-    updateFiles();
-  }, [db, thread]);
+  // useEffect(() => {
+  //   updateFiles();
+  // }, [db, thread]);
 
   const publish = async () => {
     const arrayBuf = await file?.arrayBuffer();
@@ -124,22 +127,26 @@ function Create() {
       console.log(`received event for cid ${logEvent.cid}`);
       console.log(logEvent);
     }, cid);
+    const from = (eth?.web3.currentProvider as any).selectedAddress;
+    await eth?.contract.methods
+      .create(cid, 'hello', Eth.toEthUnits(20))
+      .send({ from });
 
-    await db?.create(thread, 'files', [{ name: file?.name, cid }]);
-    await updateFiles();
+    // await db?.create(thread, 'files', [{ name: file?.name, cid }]);
+    // await updateFiles();
   };
 
-  const download = async (id: string) => {
-    const { instance: fileDoc } = (await db?.findByID(thread, 'files', id)) as {
-      instance: FileDocument;
-    };
-    const byte = await ffs?.get(fileDoc.cid);
-    const blob = new Blob([byte as Uint8Array]);
-    const link = document.createElement('a');
-    link.href = window.URL.createObjectURL(blob);
-    link.download = fileDoc.name;
-    link.click();
-  };
+  // const download = async (id: string) => {
+  //   const { instance: fileDoc } = (await db?.findByID(thread, 'files', id)) as {
+  //     instance: FileDocument;
+  //   };
+  //   const byte = await ffs?.get(fileDoc.cid);
+  //   const blob = new Blob([byte as Uint8Array]);
+  //   const link = document.createElement('a');
+  //   link.href = window.URL.createObjectURL(blob);
+  //   link.download = fileDoc.name;
+  //   link.click();
+  // };
 
   return (
     <div>
@@ -234,7 +241,7 @@ function Create() {
 
             <div className="field is-grouped">
               <div className="control">
-                <button className="button is-link is-success">
+                <button className="button is-link is-success" onClick={publish}>
                   Encrypt + Publish
                 </button>
               </div>
