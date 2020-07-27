@@ -10,7 +10,7 @@ import gql from 'graphql-tag';
 import { useSelector } from 'react-redux';
 import { State } from './reducers/types';
 import { Eth } from './helper';
-
+import { useQuery } from '@apollo/client';
 // import { ThreadID } from '@textile/hub';
 // import { FileDocument } from './schemas';
 
@@ -372,33 +372,49 @@ function Account() {
 }
 
 function Discover() {
-  const apolloClient = useSelector((state: State) => state.apolloClient);
-  const [creations, setCreations] = useState<any[]>([]);
+  // const apolloClient = useSelector((state: State) => state.apolloClient);
+  // const [creations, setCreations] = useState<any[]>([]);
 
-  useEffect(() => {
-    apolloClient
-      ?.query({
-        query: gql`
-          query {
-            creations {
-              id
-              creator
-              hash
-              description
-              price
-            }
-          }
-        `,
-      })
-      .then((result) => setCreations(result.data.creations));
-  }, [apolloClient]);
+  const GET_CREATIONS = gql`
+    query {
+      creations {
+        id
+        creator
+        hash
+        description
+        price
+      }
+    }
+  `;
+
+  const { loading, error, data } = useQuery(GET_CREATIONS, {
+    pollInterval: 500,
+  });
+
+  // useEffect(() => {
+  //   apolloClient
+  //     ?.query({
+  //       query: gql`
+  //         query {
+  //           creations {
+  //             id
+  //             creator
+  //             hash
+  //             description
+  //             price
+  //           }
+  //         }
+  //       `,
+  //     })
+  //     .then((result) => setCreations(result.data.creations));
+  // }, [apolloClient]);
 
   return (
     <div>
       <section className="section">
         <div className="columns is-centered">
           <div className="column is-half">
-            {creations.map((e) => (
+            {data?.creations.map((e: any) => (
               <div key={e.id} className="card">
                 <div className="card-content">
                   <div>creator: {e.creator}</div>

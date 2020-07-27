@@ -5,7 +5,6 @@ import {
   secretConnected,
   spaceConnected,
   ethConnected,
-  apolloConnected,
 } from './actions';
 import { createPow } from '@textile/powergate-client';
 import { Client, KeyInfo, ThreadID } from '@textile/hub';
@@ -19,9 +18,6 @@ import * as Box from '3box';
 import Web3 from 'web3';
 import { AbiItem } from 'web3-utils';
 import abi from './abis/Contract.json';
-import { ApolloClient } from 'apollo-client';
-import { InMemoryCache, NormalizedCacheObject } from 'apollo-cache-inmemory';
-import { HttpLink } from 'apollo-link-http';
 
 const getWeb3 = () =>
   new Promise((resolve, reject) => {
@@ -104,19 +100,6 @@ function* init() {
     type: 1,
   };
   const db: Client = yield Client.withKeyInfo(keyInfo);
-
-  // graphql client
-  const cache = new InMemoryCache();
-  const link = new HttpLink({
-    uri: 'https://api.thegraph.com/subgraphs/name/padlockapp/padlock',
-  });
-
-  const client: ApolloClient<NormalizedCacheObject> = new ApolloClient({
-    cache,
-    link,
-  });
-
-  yield put(apolloConnected(client));
 
   // web3 client
   const web3 = (yield getWeb3()) as Web3;

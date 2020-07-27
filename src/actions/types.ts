@@ -89,9 +89,6 @@ export const SECRET_CONNECTED = 'SECRET_CONNECTED';
 // Powergate FFS instance connected
 export const FFS_CONNECTED = 'FFS_CONNECTED';
 
-// Apollo GraphQL instance connected
-export const APOLLO_CONNECTED = 'APOLLO_CONNECTED';
-
 // encountered error
 export const FAILURE = 'FAILURE';
 
@@ -125,12 +122,6 @@ export interface SecretConnected {
 export interface FfsConnected {
   type: typeof FFS_CONNECTED;
   ffs: Ffs;
-}
-
-// ApolloConnected type
-export interface ApolloConnected {
-  type: typeof APOLLO_CONNECTED;
-  client: Apollo;
 }
 
 // Failure type

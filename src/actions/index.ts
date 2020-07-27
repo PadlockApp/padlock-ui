@@ -17,15 +17,9 @@ import {
   SECRET_CONNECTED,
   SpaceConnected,
   EthConnected,
-  ApolloConnected,
-  APOLLO_CONNECTED,
-  Apollo,
 } from './types';
 
-export const ethConnected = (
-  web3: Web3,
-  contract: Contract
-): EthConnected => ({
+export const ethConnected = (web3: Web3, contract: Contract): EthConnected => ({
   type: ETH_CONNECTED,
   web3,
   contract,
@@ -50,11 +44,6 @@ export const secretConnected = (secretPair: any): SecretConnected => ({
 export const ffsConnected = (ffs: Ffs): FfsConnected => ({
   type: FFS_CONNECTED,
   ffs,
-});
-
-export const apolloConnected = (client: Apollo): ApolloConnected => ({
-  type: APOLLO_CONNECTED,
-  client,
 });
 
 export const failure = (error: Error): Failure => ({
