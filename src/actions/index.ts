@@ -17,6 +17,9 @@ import {
   SECRET_CONNECTED,
   SpaceConnected,
   EthConnected,
+  ApolloConnected,
+  APOLLO_CONNECTED,
+  Apollo,
 } from './types';
 
 export const ethConnected = (
@@ -47,6 +50,11 @@ export const secretConnected = (secretPair: any): SecretConnected => ({
 export const ffsConnected = (ffs: Ffs): FfsConnected => ({
   type: FFS_CONNECTED,
   ffs,
+});
+
+export const apolloConnected = (client: Apollo): ApolloConnected => ({
+  type: APOLLO_CONNECTED,
+  client,
 });
 
 export const failure = (error: Error): Failure => ({

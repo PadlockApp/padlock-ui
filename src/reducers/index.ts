@@ -1,5 +1,6 @@
 import { combineReducers } from 'redux';
 import ethReducer from './ethReducer';
+import apolloReducer from './apolloReducer';
 import spaceReducer from './spaceReducer';
 import dbReducer from './dbReducer';
 import secretReducer from './secretReducer';
@@ -12,6 +13,7 @@ import { Action } from '../actions/types';
 
 const rootReducer: Reducer<State, Action> = combineReducers({
   eth: ethReducer,
+  apolloClient: apolloReducer,
   space: spaceReducer,
   db: dbReducer,
   secretPair: secretReducer,

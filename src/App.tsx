@@ -6,6 +6,7 @@ import {
   Redirect,
   NavLink,
 } from 'react-router-dom';
+import gql from 'graphql-tag';
 import { useSelector } from 'react-redux';
 import { State } from './reducers/types';
 import { Eth } from './helper';
@@ -81,6 +82,9 @@ function App() {
           </div>
         </nav>
         <Switch>
+          <Route path="/discover">
+            <Discover />
+          </Route>
           <Route path="/create">
             <Create />
           </Route>
@@ -360,6 +364,50 @@ function Account() {
                 </button>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+}
+
+function Discover() {
+  const apolloClient = useSelector((state: State) => state.apolloClient);
+  const [creations, setCreations] = useState<any[]>([]);
+
+  useEffect(() => {
+    apolloClient
+      ?.query({
+        query: gql`
+          query {
+            creations {
+              id
+              creator
+              hash
+              description
+              price
+            }
+          }
+        `,
+      })
+      .then((result) => setCreations(result.data.creations));
+  }, [apolloClient]);
+
+  return (
+    <div>
+      <section className="section">
+        <div className="columns is-centered">
+          <div className="column is-half">
+            {creations.map((e) => (
+              <div key={e.id} className="card">
+                <div className="card-content">
+                  <div>creator: {e.creator}</div>
+                  <div>CID hash: {e.hash}</div>
+                  <div>description: {e.description}</div>
+                  <div>price: {e.price} DAI</div>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </section>

@@ -2,6 +2,8 @@ import { ffsTypes, ffsOptions } from '@textile/powergate-client';
 import { Client, ThreadID } from '@textile/hub';
 import Web3Type from 'web3';
 import { Contract as ContractType } from 'web3-eth-contract';
+import { NormalizedCacheObject } from 'apollo-cache-inmemory';
+import ApolloClient from 'apollo-client';
 
 // Web3 type
 export type Web3 = Web3Type;
@@ -69,6 +71,9 @@ export type Ffs = {
   showAll: () => Promise<ffsTypes.CidInfo.AsObject[]>;
 };
 
+// Apollo Client type
+export type Apollo = ApolloClient<NormalizedCacheObject>;
+
 // Web3 provider connected
 export const ETH_CONNECTED = 'ETH_CONNECTED';
 
@@ -83,6 +88,9 @@ export const SECRET_CONNECTED = 'SECRET_CONNECTED';
 
 // Powergate FFS instance connected
 export const FFS_CONNECTED = 'FFS_CONNECTED';
+
+// Apollo GraphQL instance connected
+export const APOLLO_CONNECTED = 'APOLLO_CONNECTED';
 
 // encountered error
 export const FAILURE = 'FAILURE';
@@ -117,6 +125,12 @@ export interface SecretConnected {
 export interface FfsConnected {
   type: typeof FFS_CONNECTED;
   ffs: Ffs;
+}
+
+// ApolloConnected type
+export interface ApolloConnected {
+  type: typeof APOLLO_CONNECTED;
+  client: Apollo;
 }
 
 // Failure type
