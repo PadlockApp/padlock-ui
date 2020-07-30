@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { useAccount, useError, useSdk } from "./service";
+
 import {
   HashRouter as Router,
   Switch,
@@ -301,6 +303,10 @@ function Account() {
 
   const [name, setName] = useState('Loading..');
   const [secretAddress, setSecretAddress] = useState('Loading..');
+
+  const { refreshAccount, account } = useAccount();
+
+  debugger
 
   useEffect(() => {
     space?.public
