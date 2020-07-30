@@ -8,6 +8,9 @@ import {
 import {FeeTable} from "secretjs/types/signingcosmwasmclient";
 import { StdSignature } from "secretjs/types/types";
 import { Bip39, Random } from "@iov/crypto";
+import Web3 from 'web3';
+//@ts-ignore
+import * as Box from '3box';
 
 // generateMnemonic will give you a fresh mnemonic
 // it is up to the app to store this somewhere
@@ -16,14 +19,14 @@ export function generateMnemonic(): string {
 }
 
 // some code that will only work in a browser...
-export function loadOrCreateMnemonic(): string {
+export async function loadOrCreateMnemonic(space: any): Promise<string> {
   const key = "burner-wallet";
-  const loaded = localStorage.getItem(key);
+  const loaded = await space.private.get(key);
   if (loaded) {
     return loaded;
   }
   const generated = generateMnemonic();
-  localStorage.setItem(key, generated);
+  await space.private.set(key, generated);
   return generated;
 }
 
@@ -37,8 +40,41 @@ export interface Wallet {
   readonly signer: SigningCallback;
 }
 
+const getWeb3 = () =>
+  new Promise((resolve, reject) => {
+    // Modern dapp browsers...
+    if ((window as any).ethereum) {
+      let web3 = new Web3((window as any).ethereum);
+      (window as any).ethereum
+        .enable()
+        .then(() => resolve(web3))
+        .catch(reject);
+    }
+    // Legacy dapp browsers...
+    else if ((window as any).web3) {
+      // Use browser's provider.
+      const provider = (window as any).web3.currentProvider;
+      const web3 = new Web3(provider);
+      resolve(web3);
+    }
+    // Fallback to localhost; use dev console port by default...
+    else {
+      const provider = new Web3.providers.HttpProvider('http://localhost:8545');
+      const web3 = new Web3(provider);
+      resolve(web3);
+    }
+  });
+
 export async function burnerWallet(): Promise<Wallet> {
-  const mnemonic = loadOrCreateMnemonic();
+  const web3: any = await getWeb3();
+  const box = await Box.create(web3.currentProvider);
+  const ethAddress = (web3.currentProvider as any).selectedAddress;
+  await box.auth(['Padlock'], { address: ethAddress });
+  // Note: sometimes, openSpace returns early... caution
+  const space = await box.openSpace('Padlock');
+  await box.syncDone;
+
+  const mnemonic = await loadOrCreateMnemonic(space);
   const pen = await Secp256k1Pen.fromMnemonic(mnemonic);
   const pubkey = encodeSecp256k1Pubkey(pen.pubkey);
   const address = pubkeyToAddress(pubkey, "secret");
