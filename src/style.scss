@@ -28,6 +28,16 @@ $padlock: rgb(51, 51, 51);
   color: $padlock;
 }
 
+.padlock-logo {
+    width: 85px;
+    margin-bottom: 10px;
+}
+
+.secret-network-logo {
+    width: 160px;
+    margin-bottom: 40px;
+}
+
 .menu {
   background: linear-gradient(to bottom right, #ee9ca7, #ffdde1) !important;
   height: 100% !important;
@@ -51,6 +61,10 @@ $padlock: rgb(51, 51, 51);
   .profile-name {
     margin-top: 12px;
   }
+}
+
+.file-name {
+    width: 250px;
 }
 
 .subtitle {

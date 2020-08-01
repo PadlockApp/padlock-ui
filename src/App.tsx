@@ -3,7 +3,7 @@ import {
   HashRouter as Router,
   Switch,
   Route,
-  Redirect,
+  useHistory,
   NavLink,
 } from 'react-router-dom';
 import gql from 'graphql-tag';
@@ -125,7 +125,7 @@ function App() {
                   <Browse />
                 </Route>
                 <Route path="/">
-                  <Redirect to="/create" />
+                  <Welcome />
                 </Route>
               </Switch>
             </div>
@@ -133,6 +133,58 @@ function App() {
         </div>
       </div>
     </Router>
+  );
+}
+
+function Welcome() {
+  const history = useHistory();
+  const secretPair = useSelector((state: State) => state.secretPair);
+
+  return (
+    <div>
+      <section className="section">
+        <div
+          className="content is-medium"
+          style={{ textAlign: 'center', marginTop: '70px' }}
+        >
+          <p>Hi there! Welcome to</p>
+          <img className="padlock-logo" src="https://i.imgur.com/E4Mu7rR.png" />
+          <p>Protected by the</p>
+          <img
+            className="secret-network-logo"
+            src="https://i.imgur.com/phjTAMI.png"
+          />
+          <p>Your auto-generated Secret Network address:</p>
+          <div className="columns is-centered">
+            <div className="column is-half">
+              <div className="field">
+                <div
+                  className={`control has-icons-right  ${
+                    !secretPair && 'is-loading'
+                  }`}
+                >
+                  <input
+                    className={'input  is-medium'}
+                    type="text"
+                    disabled={true}
+                    value={secretPair?.address || 'Loading..'}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="buttons is-centered">
+            <button
+              className="button is-medium is-warning is-rounded"
+              onClick={() => history.push('account')}
+              style={{ marginTop: '40px' }}
+            >
+              Edit Profile
+            </button>
+          </div>
+        </div>
+      </section>
+    </div>
   );
 }
 
@@ -472,7 +524,7 @@ function Account() {
                     <span className="file-icon">
                       <i className="fas fa-upload"></i>
                     </span>
-                    <span className="file-label">Set profile image</span>
+                    <span className="file-label">Profile Image</span>
                   </span>
                   <span className="file-name">{file?.name && file?.name}</span>
                 </label>
