@@ -52,6 +52,7 @@ function App() {
   const [navExpanded, setNavExpanded] = useState<boolean>(false);
   const toggleNavExpanded = () => setNavExpanded(!navExpanded);
   const [imgUrl, setImgUrl] = useState('https://i.imgur.com/4b2rBVh.png');
+  const [name, setName] = useState('Loading..');
 
   useEffect(() => {
     (async () => {
@@ -60,6 +61,8 @@ function App() {
         if (profileImgHash) {
           setImgUrl(`https://gateway.pinata.cloud/ipfs/${profileImgHash}`);
         }
+        const loadedName = await space.public.get('name');
+        setName(loadedName ? loadedName : 'anonymous');
       }
     })();
   }, [space]);
@@ -77,6 +80,9 @@ function App() {
                       <figure className="image is-128x128">
                         <img className="is-rounded" src={imgUrl} />
                       </figure>
+                      <div className="profile-name media-content">
+                        <p className="title is-5 is-padlock">{name}</p>
+                      </div>
                     </div>
                   </div>
                   <div className="is-uppercase has-text-left">
@@ -364,12 +370,14 @@ function Account() {
     space?.public.set('name', name);
     space?.public.set('website', website);
     space?.public.set('about', about);
-    const { hash } = (
-      await ipfs.files.add(Buffer.from((await file?.arrayBuffer()) as any))
-    )[0];
-    await space?.public.set('profile-img-hash', hash);
-    const a = await pinByHash(hash);
-    console.log(a);
+    if (file) {
+      const { hash } = (
+        await ipfs.files.add(Buffer.from((await file?.arrayBuffer()) as any))
+      )[0];
+      await space?.public.set('profile-img-hash', hash);
+      const pin = await pinByHash(hash);
+      console.log(pin);
+    }
   };
 
   return (
