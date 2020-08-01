@@ -1,0 +1,74 @@
+@import url('https://fonts.googleapis.com/css?family=Montserrat:400,800');
+$fontFamily: Nunito, sans-serif;
+
+$padlock: rgb(51, 51, 51);
+
+#app {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  // background: #f7f7f7;
+  background: #00d1b2;
+  font-family: $fontFamily;
+  .window {
+    background: #fff;
+    height: 720px;
+    border-radius: 40px;
+    box-shadow: rgba(0, 0, 0, 0.01) 0px 0px 1px, rgba(0, 0, 0, 0.04) 0px 4px 8px,
+      rgba(0, 0, 0, 0.04) 0px 16px 24px, rgba(0, 0, 0, 0.01) 0px 24px 32px;
+  }
+}
+
+.columns {
+  height: 100% !important;
+}
+
+.is-padlock {
+  color: $padlock;
+}
+
+.menu {
+  background: linear-gradient(to bottom right, #ee9ca7, #ffdde1) !important;
+  height: 100% !important;
+  padding-left: 30px !important;
+  padding-right: 30px !important;
+  padding-top: 45px !important;
+  border-top-left-radius: 40px !important;
+  border-bottom-left-radius: 40px !important;
+}
+
+.column.is-4 {
+  max-width: 280px !important;
+}
+
+.profile {
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 120px;
+  text-align: center;
+  flex-direction: column;
+  .profile-name {
+    margin-top: 12px;
+  }
+}
+
+.subtitle {
+  font-size: 1rem !important;
+}
+
+a {
+  color: $padlock !important;
+  opacity: 0.6 !important;
+  font-weight: 800 !important;
+  margin-bottom: 8px;
+}
+
+span {
+  margin-left: 5px !important;
+}
+
+a.is-active {
+  opacity: 1 !important;
+  background: none !important;
+}

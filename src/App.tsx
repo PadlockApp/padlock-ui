@@ -11,6 +11,7 @@ import { useSelector } from 'react-redux';
 import { State } from './reducers/types';
 import { Eth } from './helper';
 import { useQuery } from '@apollo/client';
+import './style.scss';
 // import { ThreadID } from '@textile/hub';
 // import { FileDocument } from './schemas';
 
@@ -20,88 +21,59 @@ function App() {
 
   return (
     <Router>
-      <div>
-        <nav
-          className="navbar is-danger"
-          role="navigation"
-          aria-label="main navigation"
-        >
-          <div className="container">
-            <div className="navbar-brand">
-              <a className="navbar-item">
-                <img
-                  src="https://bulma.io/images/bulma-logo-white.png"
-                  width="112"
-                  height="28"
-                />
-              </a>
+      <div id="app">
+        <div className="container window">
+          <div className="columns is-gapless">
+            <div className="column is-4">
+              <aside className="menu">
+                <ul className="menu-list">
+                  <div className="profile media">
+                    <div className="media-left">
+                      <figure className="image is-128x128">
+                        <img
+                          className="is-rounded"
+                          src="https://i.imgur.com/4b2rBVh.png"
+                        />
+                      </figure>
+                    </div>
+                  </div>
+                  <div className="is-uppercase has-text-left">
+                    <NavLink
+                      to="/account"
+                      activeClassName="is-active"
+                      className="subtitle is-7"
+                    >
+                      <i className="fas fa-user"></i> <span>Account</span>
+                    </NavLink>
+                    <NavLink
+                      to="/publish"
+                      activeClassName="is-active"
+                      className="subtitle is-7"
+                    >
+                      <i className="fas fa-cloud-upload-alt"></i>{' '}
+                      <span>Encrypt + Publish</span>
+                    </NavLink>
 
-              <a
-                role="button"
-                className={`navbar-burger burger ${
-                  navExpanded ? 'is-active' : ''
-                }`}
-                aria-label="menu"
-                aria-expanded={navExpanded}
-                data-target="nav-content"
-                onClick={toggleNavExpanded}
-              >
-                <span aria-hidden="true"></span>
-                <span aria-hidden="true"></span>
-                <span aria-hidden="true"></span>
-              </a>
+                    <NavLink
+                      to="/discover"
+                      activeClassName="is-active"
+                      className="subtitle is-7"
+                    >
+                      <i className="fas fa-search"></i> <span>Browse</span>
+                    </NavLink>
+                  </div>
+                </ul>
+              </aside>
             </div>
-            <div
-              id="nav-content"
-              className={`navbar-menu ${navExpanded ? 'is-active' : ''}`}
-            >
-              <div className="navbar-start">
-                <NavLink
-                  to="/discover"
-                  activeClassName="is-active"
-                  className="navbar-item"
-                >
-                  Discover
-                </NavLink>
-                <NavLink
-                  to="/create"
-                  activeClassName="is-active"
-                  className="navbar-item"
-                >
-                  Create
-                </NavLink>
-                <NavLink
-                  to="/account"
-                  activeClassName="is-active"
-                  className="navbar-item"
-                >
-                  Account
-                </NavLink>
-              </div>
-            </div>
+            <div className="column">hi</div>
           </div>
-        </nav>
-        <Switch>
-          <Route path="/discover">
-            <Discover />
-          </Route>
-          <Route path="/create">
-            <Create />
-          </Route>
-          <Route path="/account">
-            <Account />
-          </Route>
-          <Route path="/discover"></Route>
-          <Route path="/">
-            <Redirect to="/create" />
-          </Route>
-        </Switch>
+        </div>
       </div>
     </Router>
   );
 }
 
-function Create() {
+function Publish() {
   const ffs = useSelector((state: State) => state.ffs);
   // const db = useSelector((state: State) => state.db);
   // const thread = useSelector((state: State) => state.thread) as ThreadID;
