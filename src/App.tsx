@@ -73,7 +73,7 @@ function App() {
     <Router>
       <div id="app">
         <div className="container window">
-          <div className="columns is-gapless">
+          <div className="columns is-fullheight is-gapless">
             <div className="column is-4">
               <aside className="menu">
                 <ul className="menu-list">
@@ -91,14 +91,14 @@ function App() {
                     <NavLink
                       to="/account"
                       activeClassName="is-active"
-                      className="subtitle is-7"
+                      className="subtitle is-6"
                     >
                       <i className="fas fa-user"></i> <span>Account</span>
                     </NavLink>
                     <NavLink
                       to="/publish"
                       activeClassName="is-active"
-                      className="subtitle is-7"
+                      className="subtitle is-6"
                     >
                       <i className="fas fa-cloud-upload-alt"></i>{' '}
                       <span>Encrypt + Publish</span>
@@ -107,7 +107,7 @@ function App() {
                     <NavLink
                       to="/browse"
                       activeClassName="is-active"
-                      className="subtitle is-7"
+                      className="subtitle is-6"
                     >
                       <i className="fas fa-search"></i> <span>Browse</span>
                     </NavLink>
@@ -157,7 +157,7 @@ function Welcome() {
             src="https://i.imgur.com/phjTAMI.png"
           />
           <p>Your auto-generated Secret Network address:</p>
-          <div className="columns is-centered">
+          <div className="columns is-fullheight is-centered">
             <div className="column is-half">
               <div className="field">
                 <div
@@ -244,28 +244,51 @@ function Publish() {
   return (
     <div>
       <section className="section">
-        <div className="columns is-centered">
-          <div className="column is-half">
-            <div className="field">
-              <label className="label">Title</label>
-              <div className={`control has-icons-right`}>
-                <input
-                  className={`input ${titleIsInvalid ? 'is-danger' : ''}`}
-                  type="text"
-                  placeholder="Title of your creation"
-                />
-                {titleIsInvalid && (
-                  <span className="icon is-small is-right">
-                    <i className="fas fa-exclamation-triangle"></i>
-                  </span>
-                )}
+        <h1 className="title" style={{ marginTop: '20px' }}>
+          Encrypt your Content
+        </h1>
+        <h1 className="subtitle" style={{ marginBottom: '100px' }}>
+          Fill in the information that best describes your content piece
+        </h1>
+        <div className="columns is-fullheight is-centered">
+          <div className="column">
+            <div className="columns is-centered">
+              <div className="column is-three-fifths">
+                <div className="field">
+                  <div className={`control has-icons-right`}>
+                    <input
+                      className={`input ${titleIsInvalid ? 'is-danger' : ''}`}
+                      type="text"
+                      placeholder="Title of your creation"
+                    />
+                    {titleIsInvalid && (
+                      <span className="icon is-small is-right">
+                        <i className="fas fa-exclamation-triangle"></i>
+                      </span>
+                    )}
+                  </div>
+                  {titleIsInvalid && (
+                    <p className="help is-danger">This title is invalid</p>
+                  )}
+                </div>
               </div>
-              {titleIsInvalid && (
-                <p className="help is-danger">This title is invalid</p>
-              )}
+              <div className="column">
+                <div className="field has-addons">
+                  <p className="control">
+                    <a className="button is-static">DAI</a>
+                  </p>
+                  <p className="control is-expanded">
+                    <input
+                      className="input"
+                      type="number"
+                      placeholder="Set price"
+                    />
+                  </p>
+                </div>
+              </div>
             </div>
 
-            <div className="field">
+            {/* <div className="field">
               <div className="file has-name is-fullwidth is-warning">
                 <label className="file-label">
                   <input
@@ -282,22 +305,9 @@ function Publish() {
                   <span className="file-name">{file?.name && file?.name}</span>
                 </label>
               </div>
-            </div>
+            </div> */}
 
-            <div className="field has-addons">
-              <p className="control">
-                <a className="button is-static">DAI</a>
-              </p>
-              <p className="control is-expanded">
-                <input
-                  className="input"
-                  type="text"
-                  placeholder="How much would you charge for it?"
-                />
-              </p>
-            </div>
-
-            <div className="field">
+            {/* <div className="field">
               <label className="label">Category</label>
               <div className="control">
                 <div className="select  is-fullwidth">
@@ -308,14 +318,32 @@ function Publish() {
                   </select>
                 </div>
               </div>
+            </div> */}
+            <div className="field">
+              <div className={`control has-icons-right`}>
+                <input
+                  className={`input ${false ? 'is-danger' : ''}`}
+                  type="text"
+                  placeholder="Category (type in your own!)"
+                />
+                {false && (
+                  <span className="icon is-small is-right">
+                    <i className="fas fa-exclamation-triangle"></i>
+                  </span>
+                )}
+              </div>
+              {false && (
+                <p className="help is-danger">
+                  The entered categories are invalid
+                </p>
+              )}
             </div>
 
             <div className="field">
-              <label className="label">Description</label>
               <div className="control">
                 <textarea
-                  className="textarea"
-                  placeholder="Tell us more about your creation.."
+                  className="textarea has-fixed-size"
+                  placeholder="Describe what your piece is (max 250 characters)"
                 ></textarea>
               </div>
             </div>
@@ -325,19 +353,38 @@ function Publish() {
                 <label className="checkbox">
                   <input type="checkbox" />
                   &nbsp; &nbsp;
-                  <span>Creation contains</span>
-                  &nbsp;
-                  <a href="#">NSFW material</a>
+                  <span>Contains NSFW material</span>
                 </label>
               </div>
             </div>
-
-            <div className="field is-grouped">
-              <div className="control">
-                <button className="button is-link is-success" onClick={publish}>
-                  Encrypt + Publish
-                </button>
+          </div>
+          <div className="column">
+            <div className="field">
+              <div className="file is-medium is-boxed is-centered has-name">
+                <label className="file-label">
+                  <input
+                    className="file-input"
+                    type="file"
+                    onChange={(e) => setFile(e.target.files?.item(0))}
+                  />
+                  <span className="file-cta">
+                    <span className="file-icon">
+                      <i className="fas fa-upload"></i>
+                    </span>
+                    <span className="file-label">Content File</span>
+                  </span>
+                  <span className="file-name">{file?.name && file?.name}</span>
+                </label>
               </div>
+            </div>
+            <div className="buttons is-centered">
+              <button
+                className="button is-medium is-warning is-rounded"
+                onClick={publish}
+                style={{ marginTop: '82px' }}
+              >
+                Review
+              </button>
             </div>
           </div>
         </div>
@@ -443,7 +490,7 @@ function Account() {
         >
           Your Profile
         </h1>
-        <div className="columns is-centered">
+        <div className="columns is-fullheight is-centered">
           <div className="column is-three-fifths">
             <div className="field">
               <label className="label">Name</label>
@@ -620,8 +667,14 @@ function Browse() {
         </div>
         <div className="card-container">
           {data?.creations
-            .filter((e: any) =>
-              (e.description as string).toLowerCase().includes(searchFilter)
+            .filter(
+              (e: any) =>
+                (e.description as string)
+                  .toLowerCase()
+                  .includes(searchFilter) ||
+                (creators[e.id]?.name as string)
+                  ?.toLowerCase()
+                  .includes(searchFilter)
             )
             .map((e: any) => (
               <div key={e.id} className="card">
