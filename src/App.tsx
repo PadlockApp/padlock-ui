@@ -551,6 +551,7 @@ function Account() {
 function Browse() {
   // const apolloClient = useSelector((state: State) => state.apolloClient);
   const [creators, setCreators] = useState<any>({});
+  const [searchFilter, setSearchFilter] = useState('');
 
   const GET_CREATIONS = gql`
     query {
@@ -575,7 +576,10 @@ function Browse() {
 
   useEffect(() => {
     data?.creations.map((creator: any) => {
-      setCreators((state: any) => ({ ...state, [creator.id]: { name: 'Loading..' } }));
+      setCreators((state: any) => ({
+        ...state,
+        [creator.id]: { name: 'Loading..' },
+      }));
       getProfile(creator.creator).then((c: any) => {
         setCreators((state: any) => ({ ...state, [creator.id]: c }));
       });
@@ -609,30 +613,36 @@ function Browse() {
               className="input is-medium is-rounded"
               type="text"
               placeholder="Browse"
+              value={searchFilter}
+              onChange={(e) => setSearchFilter(e.target.value)}
             />
           </p>
         </div>
         <div className="card-container">
-          {data?.creations.map((e: any) => (
-            <div key={e.id} className="card">
-              <div className="card-image">
-                <figure className="image is-4by3">
-                  <img
-                    src="https://bulma.io/images/placeholders/1280x960.png"
-                    alt="Placeholder image"
-                  />
-                </figure>
-              </div>
-              <div className="card-content">
-                <div className="content">
-                  <div>creator: {creators[e.id]?.name}</div>
-                  {/* <div>CID hash: {e.hash}</div> */}
-                  <div>{e.description}</div>
-                  <span className="tag is-warning">{e.price} DAI</span>
+          {data?.creations
+            .filter((e: any) =>
+              (e.description as string).toLowerCase().includes(searchFilter)
+            )
+            .map((e: any) => (
+              <div key={e.id} className="card">
+                <div className="card-image">
+                  <figure className="image is-4by3">
+                    <img
+                      src="https://bulma.io/images/placeholders/1280x960.png"
+                      alt="Placeholder image"
+                    />
+                  </figure>
+                </div>
+                <div className="card-content">
+                  <div className="content">
+                    <div>creator: {creators[e.id]?.name}</div>
+                    {/* <div>CID hash: {e.hash}</div> */}
+                    <div>{e.description}</div>
+                    <span className="tag is-warning">{e.price} DAI</span>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
         </div>
       </section>
     </div>
