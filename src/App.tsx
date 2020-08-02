@@ -18,8 +18,6 @@ import axios from 'axios';
 import * as Box from '3box';
 import './style.scss';
 
-// import { ThreadID } from '@textile/hub';
-// import { FileDocument } from './schemas';
 const { REACT_APP_PINATA_KEY, REACT_APP_PINATA_SECRET } = process.env;
 
 const ipfs = new IPFS({
@@ -51,8 +49,6 @@ export const pinByHash = (hashToPin: string) => {
 function App() {
   const space = useSelector((state: State) => state.space);
 
-  const [navExpanded, setNavExpanded] = useState<boolean>(false);
-  const toggleNavExpanded = () => setNavExpanded(!navExpanded);
   const [imgUrl, setImgUrl] = useState('https://i.imgur.com/4b2rBVh.png');
   const [name, setName] = useState('Loading..');
 
@@ -120,9 +116,10 @@ function App() {
                 <Route path="/account">
                   <Account />
                 </Route>
-                <Route path="/publish">
+                <Route exact path="/publish">
                   <Publish />
                 </Route>
+                <Route path="/publish/review" component={Review} />
                 <Route path="/browse">
                   <Browse />
                 </Route>
@@ -177,7 +174,7 @@ function Welcome() {
           </div>
           <div className="buttons is-centered">
             <button
-              className="button is-medium is-warning is-rounded"
+              className="button is-medium is-primary is-rounded"
               onClick={() => history.push('account')}
               style={{ marginTop: '40px' }}
             >
@@ -191,55 +188,35 @@ function Welcome() {
 }
 
 function Publish() {
-  const ffs = useSelector((state: State) => state.ffs);
-  // const db = useSelector((state: State) => state.db);
-  // const thread = useSelector((state: State) => state.thread) as ThreadID;
-  const eth = useSelector((state: State) => state.eth);
+  const history = useHistory();
+  const [title, setTitle] = useState('');
+  const [price, setPrice] = useState(0);
+  const [description, setDescription] = useState('');
+  const [categories, setCategories] = useState<string[]>([]);
+  const [nsfw, setNsfw] = useState(false);
 
+  // TODO: field verification
   const titleIsInvalid = false;
+  const priceIsInvalid = false;
+  const descriptionIsInvalid = false;
+  const categoriesAreInvalid = false;
 
   const [file, setFile] = useState<File | null>();
-  // const [cloudFiles, setCloudFiles] = useState<FileDocument[]>([]);
 
-  // const updateFiles = async () => {
-  //   const files = (await db?.find(thread, 'files', {}))?.instancesList;
-  //   setCloudFiles(files as [FileDocument]);
-  // };
-
-  // useEffect(() => {
-  //   updateFiles();
-  // }, [db, thread]);
-
-  const publish = async () => {
-    const arrayBuf = await file?.arrayBuffer();
-    const { cid } = (await ffs?.addToHot(
-      Buffer.from(arrayBuf as ArrayBuffer)
-    )) as any;
-    await ffs?.pushConfig(cid);
-    ffs?.watchLogs((logEvent) => {
-      console.log(`received event for cid ${logEvent.cid}`);
-      console.log(logEvent);
-    }, cid);
-    const from = (eth?.web3.currentProvider as any).selectedAddress;
-    await eth?.contract.methods
-      .create(cid, 'hello', Eth.toEthUnits(20))
-      .send({ from });
-
-    // await db?.create(thread, 'files', [{ name: file?.name, cid }]);
-    // await updateFiles();
+  const review = () => {
+    const to = {
+      pathname: '/publish/review',
+      file,
+      price,
+      metadata: {
+        title,
+        description,
+        categories: categories.filter((e) => e.length !== 0),
+        nsfw,
+      },
+    };
+    history.push(to);
   };
-
-  // const download = async (id: string) => {
-  //   const { instance: fileDoc } = (await db?.findByID(thread, 'files', id)) as {
-  //     instance: FileDocument;
-  //   };
-  //   const byte = await ffs?.get(fileDoc.cid);
-  //   const blob = new Blob([byte as Uint8Array]);
-  //   const link = document.createElement('a');
-  //   link.href = window.URL.createObjectURL(blob);
-  //   link.download = fileDoc.name;
-  //   link.click();
-  // };
 
   return (
     <div>
@@ -255,11 +232,14 @@ function Publish() {
             <div className="columns is-centered">
               <div className="column is-three-fifths">
                 <div className="field">
+                  <label className="label">Title</label>
                   <div className={`control has-icons-right`}>
                     <input
                       className={`input ${titleIsInvalid ? 'is-danger' : ''}`}
                       type="text"
                       placeholder="Title of your creation"
+                      value={title}
+                      onChange={(e) => setTitle(e.target.value)}
                     />
                     {titleIsInvalid && (
                       <span className="icon is-small is-right">
@@ -273,58 +253,46 @@ function Publish() {
                 </div>
               </div>
               <div className="column">
+                <label className="label">Price</label>
                 <div className="field has-addons">
-                  <p className="control">
-                    <a className="button is-static">DAI</a>
-                  </p>
                   <p className="control is-expanded">
                     <input
                       className="input"
                       type="number"
+                      min="0"
                       placeholder="Set price"
+                      value={price}
+                      onChange={(e) => setPrice(Number(e.target.value))}
                     />
+                  </p>
+                  <p className="control">
+                    <a className="button is-static">DAI</a>
                   </p>
                 </div>
               </div>
             </div>
-
-            {/* <div className="field">
-              <div className="file has-name is-fullwidth is-warning">
-                <label className="file-label">
-                  <input
-                    className="file-input"
-                    type="file"
-                    onChange={(e) => setFile(e.target.files?.item(0))}
-                  />
-                  <span className="file-cta">
-                    <span className="file-icon">
-                      <i className="fas fa-upload"></i>
-                    </span>
-                    <span className="file-label">Choose a file…</span>
-                  </span>
-                  <span className="file-name">{file?.name && file?.name}</span>
-                </label>
-              </div>
-            </div> */}
-
-            {/* <div className="field">
-              <label className="label">Category</label>
-              <div className="control">
-                <div className="select  is-fullwidth">
-                  <select>
-                    <option>Music</option>
-                    <option>Video</option>
-                    <option>Image</option>
-                  </select>
-                </div>
-              </div>
-            </div> */}
             <div className="field">
+              <label className="label">Description</label>
+              <div className="control">
+                <textarea
+                  className="textarea has-fixed-size"
+                  placeholder="Describe what your piece is (max 250 characters)"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                ></textarea>
+              </div>
+            </div>
+            <div className="field">
+              <label className="label">Categories</label>
               <div className={`control has-icons-right`}>
                 <input
                   className={`input ${false ? 'is-danger' : ''}`}
                   type="text"
-                  placeholder="Category (type in your own!)"
+                  placeholder="Categories (enter your own, separated by commas)"
+                  value={categories.join(',')}
+                  onChange={(e) =>
+                    setCategories(e.target.value.split(/\s*,\s*/))
+                  }
                 />
                 {false && (
                   <span className="icon is-small is-right">
@@ -338,20 +306,14 @@ function Publish() {
                 </p>
               )}
             </div>
-
-            <div className="field">
-              <div className="control">
-                <textarea
-                  className="textarea has-fixed-size"
-                  placeholder="Describe what your piece is (max 250 characters)"
-                ></textarea>
-              </div>
-            </div>
-
             <div className="field">
               <div className="control">
                 <label className="checkbox">
-                  <input type="checkbox" />
+                  <input
+                    type="checkbox"
+                    checked={nsfw}
+                    onChange={() => setNsfw(!nsfw)}
+                  />
                   &nbsp; &nbsp;
                   <span>Contains NSFW material</span>
                 </label>
@@ -379,8 +341,8 @@ function Publish() {
             </div>
             <div className="buttons is-centered">
               <button
-                className="button is-medium is-warning is-rounded"
-                onClick={publish}
+                className="button is-medium is-primary is-rounded"
+                onClick={review}
                 style={{ marginTop: '82px' }}
               >
                 Review
@@ -389,44 +351,118 @@ function Publish() {
           </div>
         </div>
       </section>
-      {/* <div className="panel">
-        <p className="panel-heading">
-          Cloud Content
-          </p>
-        <>
-          {
-            cloudFiles?.map(file =>
-              <a className="panel-block" key={file._id} onClick={() => download(file._id)}>
-                <span className="panel-icon">
-                  <i className="fas fa-file"></i>
-                </span>
-                {file.name}
-              </a>
-            )
-          }
-        </>
-      </div>
+    </div>
+  );
+}
 
-      <div className="file is-danger has-name is-boxed">
-        <label className="file-label">
-          <input className="file-input" type="file" name="resume" onChange={e => setFile(e.target.files?.item(0))} />
-          <span className="file-cta">
-            <span className="file-icon">
-              <i className="fas fa-file-import"></i>
-            </span>
-            <span className="file-label">
-              Select a file…
-            </span>
-          </span>
-          <span className="file-name">{file?.name && file?.name.slice(0, 18) + '...'}</span>
-        </label>
-      </div>
-      <a className="button is-info is-outlined" onClick={publish}>
-        <span className="icon is-small">
-          <i className="fas fa-cloud"></i>
-        </span>
-        <span>Publish</span>
-      </a> */}
+function Review(props: any) {
+  const history = useHistory();
+  const ffs = useSelector((state: State) => state.ffs);
+  const eth = useSelector((state: State) => state.eth);
+
+  const { file, price, metadata } = props.location;
+
+  const reset = () => {
+    history.goBack();
+  };
+
+  const publish = async () => {
+    const arrayBuf = await file?.arrayBuffer();
+    const { cid } = (await ffs?.addToHot(
+      Buffer.from(arrayBuf as ArrayBuffer)
+    )) as any;
+    await ffs?.pushConfig(cid);
+    ffs?.watchLogs((logEvent) => {
+      console.log(`received event for cid ${logEvent.cid}`);
+      console.log(logEvent);
+    }, cid);
+    const from = (eth?.web3.currentProvider as any).selectedAddress;
+    await eth?.contract.methods
+      .create(cid, 'hello', Eth.toEthUnits(price))
+      .send({ from });
+    // TODO: use the following info
+    console.log(file, price, JSON.stringify(metadata));
+  };
+
+  return (
+    <div>
+      <section className="section">
+        <h1 className="title" style={{ marginTop: '20px' }}>
+          Review
+        </h1>
+        <h1 className="subtitle" style={{ marginBottom: '100px' }}>
+          Review the information for your content piece
+        </h1>
+        <div className="columns is-fullheight is-centered">
+          <div className="column">
+            <div className="columns is-centered">
+              <div className="column is-three-fifths">
+                <div className="field">
+                  <label className="label">Title</label>
+                  <div className="content">{metadata?.title}</div>
+                </div>
+              </div>
+              <div className="column">
+                <label className="label">Price</label>
+                <div className="content">{price} DAI</div>
+              </div>
+            </div>
+            <div className="field">
+              <label className="label">Description</label>
+              <div className="content">{metadata?.description}</div>
+            </div>
+            <div className="field">
+              <label className="label">Categories</label>
+              <div className={`control has-icons-right`}>
+                <div className="tags">
+                  {metadata?.categories.map((c: any) => (
+                    <span className="tag is-primary">{c}</span>
+                  ))}
+                </div>
+              </div>
+            </div>
+            <div className="field">
+              <div className="control">
+                <label className="checkbox">
+                  <input type="checkbox" disabled checked={metadata?.nsfw} />
+                  &nbsp; &nbsp;
+                  <span>Contains NSFW material</span>
+                </label>
+              </div>
+            </div>
+          </div>
+          <div className="column">
+            <div className="field">
+              <div className="file is-medium is-boxed is-centered has-name">
+                <label className="file-label">
+                  <input className="file-input" type="file" disabled />
+                  <span className="file-cta">
+                    <span className="file-icon">
+                      <i className="fas fa-upload"></i>
+                    </span>
+                    <span className="file-label">Content File</span>
+                  </span>
+                  <span className="file-name">{file?.name && file?.name}</span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="buttons is-centered" style={{ marginTop: '82px' }}>
+          <button
+            className="button is-medium is-danger is-rounded"
+            onClick={reset}
+          >
+            Reset Fields
+          </button>
+          <button
+            className="button is-medium is-primary is-rounded"
+            onClick={publish}
+          >
+            Padlock It!
+          </button>
+        </div>
+      </section>
     </div>
   );
 }
@@ -581,7 +617,7 @@ function Account() {
             </div>
             <div className="buttons is-centered">
               <button
-                className="button is-medium is-warning is-rounded"
+                className="button is-medium is-primary is-rounded"
                 onClick={updateAccount}
                 style={{ marginTop: '82px' }}
               >
@@ -632,24 +668,6 @@ function Browse() {
       });
     });
   }, [data?.creations]);
-
-  // useEffect(() => {
-  //   apolloClient
-  //     ?.query({
-  //       query: gql`
-  //         query {
-  //           creations {
-  //             id
-  //             creator
-  //             hash
-  //             description
-  //             price
-  //           }
-  //         }
-  //       `,
-  //     })
-  //     .then((result) => setCreations(result.data.creations));
-  // }, [apolloClient]);
 
   return (
     <div>

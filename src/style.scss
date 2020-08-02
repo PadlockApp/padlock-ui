@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css?family=Montserrat:400,800');
 $fontFamily: Nunito, sans-serif;
 
-$padlock: rgb(51, 51, 51);
+$padlock: rgb(60, 60, 60);
 
 #app {
   display: flex;
@@ -9,7 +9,7 @@ $padlock: rgb(51, 51, 51);
   justify-content: center;
   height: 100vh;
   // background: #f7f7f7;
-  background: #00d1b2;
+  background: #96deda;
   font-family: $fontFamily;
   .window {
     background: #fff;
@@ -39,7 +39,7 @@ $padlock: rgb(51, 51, 51);
 }
 
 .menu {
-  background: linear-gradient(to bottom right, #ee9ca7, #ffdde1) !important;
+  background: linear-gradient(to bottom right, #1cd8d2, #93edc7) !important;
   height: 100% !important;
   padding-left: 30px !important;
   padding-right: 30px !important;
