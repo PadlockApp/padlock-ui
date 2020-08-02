@@ -476,6 +476,8 @@ function Account() {
   const [file, setFile] = useState<File | null>();
   const [loading, setLoading] = useState(true);
 
+  // TODO: add field verification
+
   useEffect(() => {
     (async () => {
       if (space) {
