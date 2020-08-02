@@ -29,13 +29,13 @@ $padlock: rgb(51, 51, 51);
 }
 
 .padlock-logo {
-    width: 85px;
-    margin-bottom: 10px;
+  width: 85px;
+  margin-bottom: 10px;
 }
 
 .secret-network-logo {
-    width: 160px;
-    margin-bottom: 40px;
+  width: 160px;
+  margin-bottom: 40px;
 }
 
 .menu {
@@ -64,7 +64,7 @@ $padlock: rgb(51, 51, 51);
 }
 
 .file-name {
-    width: 250px;
+  width: 250px;
 }
 
 .subtitle {
@@ -85,4 +85,30 @@ span {
 a.is-active {
   opacity: 1 !important;
   background: none !important;
+}
+
+.card-container {
+    margin-top: 35px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-gap: 1.2em;
+  height: 520px;
+  padding-right: 20px;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  &::-webkit-scrollbar {
+    width: 0.6em;
+  }
+  &::-webkit-scrollbar-track {
+    background: #eeeff3;
+    border-radius: 20px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #b5bbcc;
+    border-radius: 20px;
+  }
+}
+
+.card {
+  height: max-content;
 }

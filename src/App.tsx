@@ -587,19 +587,36 @@ function Browse() {
   return (
     <div>
       <section className="section">
-        <div className="columns is-centered">
-          <div className="column is-half">
-            {data?.creations.map((e: any) => (
-              <div key={e.id} className="card">
-                <div className="card-content">
-                  <div>creator: {e.creator}</div>
-                  <div>CID hash: {e.hash}</div>
-                  <div>description: {e.description}</div>
-                  <div>price: {e.price} DAI</div>
+        <div className="field is-grouped">
+          <p className="control">
+            <input
+              className="input is-medium is-rounded"
+              type="text"
+              placeholder="Browse"
+            />
+          </p>
+        </div>
+        <div className="card-container">
+          {data?.creations.map((e: any) => (
+            <div key={e.id} className="card">
+              <div className="card-image">
+                <figure className="image is-4by3">
+                  <img
+                    src="https://bulma.io/images/placeholders/1280x960.png"
+                    alt="Placeholder image"
+                  />
+                </figure>
+              </div>
+              <div className="card-content">
+                <div className="content">
+                  {/* <div>creator: {e.creator}</div> */}
+                  {/* <div>CID hash: {e.hash}</div> */}
+                  <div>{e.description}</div>
+                  <span className="tag is-warning">{e.price} DAI</span>
                 </div>
               </div>
-            ))}
-          </div>
+            </div>
+          ))}
         </div>
       </section>
     </div>
