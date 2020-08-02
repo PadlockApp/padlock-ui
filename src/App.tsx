@@ -14,6 +14,8 @@ import { useQuery } from '@apollo/client';
 //@ts-ignore
 import IPFS from 'ipfs-api';
 import axios from 'axios';
+//@ts-ignore
+import * as Box from '3box';
 import './style.scss';
 
 // import { ThreadID } from '@textile/hub';
@@ -548,7 +550,7 @@ function Account() {
 
 function Browse() {
   // const apolloClient = useSelector((state: State) => state.apolloClient);
-  // const [creations, setCreations] = useState<any[]>([]);
+  const [creators, setCreators] = useState<any>({});
 
   const GET_CREATIONS = gql`
     query {
@@ -562,9 +564,23 @@ function Browse() {
     }
   `;
 
+  const getProfile = async (address: string) => {
+    const profile = await Box.getSpace(address, 'Padlock');
+    return profile;
+  };
+
   const { loading, error, data } = useQuery(GET_CREATIONS, {
     pollInterval: 500,
   });
+
+  useEffect(() => {
+    data?.creations.map((creator: any) => {
+      setCreators((state: any) => ({ ...state, [creator.id]: { name: 'Loading..' } }));
+      getProfile(creator.creator).then((c: any) => {
+        setCreators((state: any) => ({ ...state, [creator.id]: c }));
+      });
+    });
+  }, [data?.creations]);
 
   // useEffect(() => {
   //   apolloClient
@@ -609,7 +625,7 @@ function Browse() {
               </div>
               <div className="card-content">
                 <div className="content">
-                  {/* <div>creator: {e.creator}</div> */}
+                  <div>creator: {creators[e.id]?.name}</div>
                   {/* <div>CID hash: {e.hash}</div> */}
                   <div>{e.description}</div>
                   <span className="tag is-warning">{e.price} DAI</span>
