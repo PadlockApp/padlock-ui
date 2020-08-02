@@ -10,7 +10,6 @@ import { createPow } from '@textile/powergate-client';
 import { Client, KeyInfo, ThreadID } from '@textile/hub';
 import { Libp2pCryptoIdentity } from '@textile/threads-core';
 import { FileSchema } from './schemas';
-import { encodeSecp256k1Pubkey, pubkeyToAddress, Secp256k1Pen } from 'secretjs';
 import { StdSignature } from 'secretjs/types/types';
 import { Bip39, Random } from '@iov/crypto';
 //@ts-ignore
@@ -18,6 +17,8 @@ import * as Box from '3box';
 import Web3 from 'web3';
 import { AbiItem } from 'web3-utils';
 import abi from './abis/Contract.json';
+import { config } from "./config";
+const { EnigmaUtils, Secp256k1Pen, SigningCosmWasmClient, pubkeyToAddress, encodeSecp256k1Pubkey } = require("secretjs");
 
 const getWeb3 = () =>
   new Promise((resolve, reject) => {
@@ -80,6 +81,22 @@ async function getSecretWallet(space: any) {
   const signer = (signBytes: Uint8Array): Promise<StdSignature> =>
     pen.sign(signBytes);
 
+  const txEncryptionSeed = EnigmaUtils.GenerateNewSeed();
+  const client = new SigningCosmWasmClient(
+        config.httpUrl,
+        address,
+        signer,
+        txEncryptionSeed, config.fees
+    );
+    debugger
+
+  //todo remove, just testing the client works
+  const itemId = 1;
+  const contractAddress = "secret18vd8fpwxzck93qlwghaj6arh4p7c5n8978vsyg";
+  const isWhitelistedMsg = {"IsWhitelisted": {"address": address, "id": itemId}}
+  let result = await client.queryContractSmart(contractAddress, isWhitelistedMsg);
+  console.log(`IsWhitelisted ${address}: ${result.whitelisted}`);
+  
   const wallet = { address, signer };
   await space.private.set('user-secret-wallet', mnemonic);
   return wallet;
@@ -105,7 +122,7 @@ function* init() {
   const web3 = (yield getWeb3()) as Web3;
   const contract = new web3.eth.Contract(
     abi as AbiItem[],
-    '0x61EE6FEFE8C6B859c139A4b87F2AB3084e7B4dE3'
+    '0x8D1eD3DaB2dE4622b7eD38baB4A9918256CF7B30'
   );
   yield put(ethConnected(web3, contract));
 
