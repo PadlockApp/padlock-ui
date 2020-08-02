@@ -381,6 +381,7 @@ function Review(props: any) {
       .create(cid, 'hello', Eth.toEthUnits(price))
       .send({ from });
     // TODO: use the following info
+    // TODO: add toasts + notify.js
     console.log(file, price, JSON.stringify(metadata));
   };
 
