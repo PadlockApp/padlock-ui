@@ -76,7 +76,11 @@ function App() {
                   <div className="profile media">
                     <div className="media-left">
                       <figure className="image is-128x128">
-                        <img className="is-rounded" src={imgUrl} />
+                        <img
+                          className="is-rounded"
+                          src={imgUrl}
+                          alt="user profile"
+                        />
                       </figure>
                       <div className="profile-name media-content">
                         <p className="title is-5 is-padlock">{name}</p>
@@ -147,11 +151,16 @@ function Welcome() {
           style={{ textAlign: 'center', marginTop: '70px' }}
         >
           <p>Hi there! Welcome to</p>
-          <img className="padlock-logo" src="https://i.imgur.com/E4Mu7rR.png" />
+          <img
+            className="padlock-logo"
+            src="https://i.imgur.com/E4Mu7rR.png"
+            alt="padlock logo"
+          />
           <p>Protected by the</p>
           <img
             className="secret-network-logo"
             src="https://i.imgur.com/phjTAMI.png"
+            alt="secret network logo"
           />
           <p>Your auto-generated Secret Network address:</p>
           <div className="columns is-fullheight is-centered">
@@ -197,9 +206,9 @@ function Publish() {
 
   // TODO: field verification
   const titleIsInvalid = false;
-  const priceIsInvalid = false;
-  const descriptionIsInvalid = false;
-  const categoriesAreInvalid = false;
+  // const priceIsInvalid = false;
+  // const descriptionIsInvalid = false;
+  // const categoriesAreInvalid = false;
 
   const [file, setFile] = useState<File | null>();
 
@@ -266,7 +275,9 @@ function Publish() {
                     />
                   </p>
                   <p className="control">
-                    <a className="button is-static">DAI</a>
+                    <p className="button is-static">
+                      <strong>DAI</strong>
+                    </p>
                   </p>
                 </div>
               </div>
@@ -656,7 +667,7 @@ function Browse() {
     return profile;
   };
 
-  const { loading, error, data } = useQuery(GET_CREATIONS, {
+  const { data } = useQuery(GET_CREATIONS, {
     pollInterval: 500,
   });
 
@@ -670,7 +681,7 @@ function Browse() {
         setCreators((state: any) => ({ ...state, [creator.id]: c }));
       });
     });
-  }, [data?.creations]);
+  }, [data]);
 
   return (
     <div>
@@ -703,7 +714,7 @@ function Browse() {
                   <figure className="image is-4by3">
                     <img
                       src="https://bulma.io/images/placeholders/1280x960.png"
-                      alt="Placeholder image"
+                      alt="Placeholder"
                     />
                   </figure>
                 </div>
