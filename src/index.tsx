@@ -5,9 +5,11 @@ import { ApolloProvider } from '@apollo/client';
 import { ApolloClient } from 'apollo-client';
 import { InMemoryCache, NormalizedCacheObject } from 'apollo-cache-inmemory';
 import { HttpLink } from 'apollo-link-http';
+import { AccountProvider, BurnerWalletProvider, ErrorProvider } from "./service";
 
 import App from './App';
 import { initStore } from './store';
+import { config } from "./config";
 
 const store = initStore();
 
@@ -24,9 +26,15 @@ const client: ApolloClient<NormalizedCacheObject> = new ApolloClient({
 
 ReactDOM.render(
   <Provider store={store}>
-    <ApolloProvider client={client as any}>
-      <App />
-    </ApolloProvider>
+  <ErrorProvider>
+    <BurnerWalletProvider config={config}>
+        <AccountProvider>
+          <ApolloProvider client={client as any}>
+            <App />
+          </ApolloProvider>
+        </AccountProvider>
+      </BurnerWalletProvider>
+    </ErrorProvider>
   </Provider>,
   document.getElementById('root')
 );

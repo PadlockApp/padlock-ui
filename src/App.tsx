@@ -53,6 +53,8 @@ export const isURL = (str: string) => {
   return str.length < 2083 && url.test(str);
 };
 
+const EthCrypto = require('eth-crypto');
+
 function App() {
   const space = useSelector((state: State) => state.space);
 
@@ -456,18 +458,41 @@ function Review(props: any) {
   const ffs = useSelector((state: State) => state.ffs);
   const eth = useSelector((state: State) => state.eth);
 
-  const { file, price, metadata } = props.location;
+  const { file, price, metadata }: { file: File, price: number, metadata: any } = props.location;
 
   const reset = () => {
     history.goBack();
   };
 
+  /**
+  * @method encryptWithPublicKey
+  * @param {String} pubKey - Compressed 33byte public key starting with 0x03 or 0x02
+  * @param {Object} message - message object to encrypt
+  */
+  async function encryptWithPublicKey(pubKey, message) {
+      pubKey = pubKey.substring(2)
+      const encryptedObject = await EthCrypto.encryptWithPublicKey(
+          pubKey,
+          JSON.stringify(message)
+      );
+      return EthCrypto.cipher.stringify(encryptedObject);
+  }
+
   const publish = async () => {
-    const arrayBuf = await file?.arrayBuffer();
-    const { cid } = (await ffs?.addToHot(
-      Buffer.from(arrayBuf as ArrayBuffer)
+
+    // todo get this from SecretContract on instantiate
+    const publickey = '0x04a8873dd159b2c241dcf56ff4baa59e84cc0124844340d6eec7b7f8fd795a921a7e5fc50298aa728ba9fe4561dd99cb2d52e6267a8e0549ccf34ca767b6593ab8';
+
+    const rawText = await file?.text();
+    const data = await encryptWithPublicKey(publickey, rawText);
+
+    // todo upload encrypted data
+
+    const buffer = Buffer.from(data);
+    const { cid } = (await ffs?.stage(
+      buffer
     )) as any;
-    await ffs?.pushConfig(cid);
+    await ffs?.pushStorageConfig(cid);
     ffs?.watchLogs((logEvent) => {
       console.log(`received event for cid ${logEvent.cid}`);
       console.log(logEvent);
@@ -788,6 +813,19 @@ function Browse() {
       }
     }
   `;
+
+  /*
+  todo get private key from secret network if holding NFT, and decrypt
+  const privateKey = '0x7934533cd797cfe47d7b5c43ddcf80ee1605aa2d209137bbf1c8b5bb4003f194';
+
+      const decrypted = await decryptWithPrivateKey(privateKey, encryptedString)
+  */
+  async function decryptWithPrivateKey(privateKey: string, encrypted: string) {
+    const encryptedObject = EthCrypto.cipher.parse(encrypted);
+      const decryptedString = await EthCrypto.decryptWithPrivateKey(
+        privateKey, encryptedObject);
+      console.log(`decrypted=${decryptedString}`)
+  }
 
   const getProfile = async (address: string) => {
     const profile = await Box.getSpace(address, 'Padlock');
