@@ -94,7 +94,7 @@ function App() {
                       </div>
                     </div>
                   </div>
-                  <div className="is-uppercase has-text-left">
+                  <div className="navigation is-uppercase has-text-left">
                     <NavLink
                       to="/account"
                       activeClassName="is-active"
@@ -291,7 +291,7 @@ function Publish() {
         <div className="columns is-fullheight is-centered">
           <div className="column">
             <div className="columns is-centered">
-              <div className="column is-three-fifths">
+              <div className="column is-two-thirds-widescreen is-three-fifths-desktop">
                 <div className="field">
                   <label className="label">Title</label>
                   <div className="control has-icons-right">
