@@ -46,6 +46,13 @@ export const pinByHash = (hashToPin: string) => {
     });
 };
 
+export const isURL = (str: string) => {
+  var urlRegex =
+    '^(?!mailto:)(?:(?:http|https|ftp)://)?(?:\\S+(?::\\S*)?@)?(?:(?:(?:[1-9]\\d?|1\\d\\d|2[01]\\d|22[0-3])(?:\\.(?:1?\\d{1,2}|2[0-4]\\d|25[0-5])){2}(?:\\.(?:[0-9]\\d?|1\\d\\d|2[0-4]\\d|25[0-4]))|(?:(?:[a-z\\u00a1-\\uffff0-9]+-?)*[a-z\\u00a1-\\uffff0-9]+)(?:\\.(?:[a-z\\u00a1-\\uffff0-9]+-?)*[a-z\\u00a1-\\uffff0-9]+)*(?:\\.(?:[a-z\\u00a1-\\uffff]{2,})))|localhost)(?::\\d{2,5})?(?:(/|\\?|#)[^\\s]*)?$';
+  var url = new RegExp(urlRegex, 'i');
+  return str.length < 2083 && url.test(str);
+};
+
 const EthCrypto = require('eth-crypto');
 
 function App() {
@@ -89,7 +96,7 @@ function App() {
                       </div>
                     </div>
                   </div>
-                  <div className="is-uppercase has-text-left">
+                  <div className="navigation is-uppercase has-text-left">
                     <NavLink
                       to="/account"
                       activeClassName="is-active"
@@ -113,6 +120,13 @@ function App() {
                     >
                       <i className="fas fa-search"></i> <span>Browse</span>
                     </NavLink>
+                  </div>
+                  <div className="signature">
+                    <img
+                      className="padlock-logo-small"
+                      src="https://i.imgur.com/E4Mu7rR.png"
+                      alt="padlock logo"
+                    />
                   </div>
                 </ul>
               </aside>
@@ -161,7 +175,7 @@ function Welcome() {
           <p>Protected by the</p>
           <img
             className="secret-network-logo"
-            src="https://i.imgur.com/phjTAMI.png"
+            src="https://i.imgur.com/ii8omEP.png"
             alt="secret network logo"
           />
           <p>Your auto-generated Secret Network address:</p>
@@ -205,29 +219,74 @@ function Publish() {
   const [description, setDescription] = useState('');
   const [categories, setCategories] = useState<string[]>([]);
   const [nsfw, setNsfw] = useState(false);
-
-  // TODO: field verification
-  const titleIsInvalid = false;
-  // const priceIsInvalid = false;
-  // const descriptionIsInvalid = false;
-  // const categoriesAreInvalid = false;
-
   const [file, setFile] = useState<File | null>();
+  const [reviewIsInvoked, setReviewIsInvoked] = useState(false);
+
+  const titleIsInvalid = () => title.length === 0 && reviewIsInvoked;
+  const priceIsInvalid = () => price <= 0 && reviewIsInvoked;
+  const descriptionIsInvalid = () =>
+    (description.length === 0 || description.length > 250) && reviewIsInvoked;
+  const categoriesAreInvalid = () =>
+    (categories.length === 0 ||
+      categories.length > 5 ||
+      categories.filter(
+        (c) => categories.indexOf(c) !== categories.lastIndexOf(c)
+      ).length !== 0) &&
+    reviewIsInvoked;
+  const fileIsInvalid = () => !file && reviewIsInvoked;
 
   const review = () => {
-    const to = {
-      pathname: '/publish/review',
-      file,
-      price,
-      metadata: {
-        title,
-        description,
-        categories: categories.filter((e) => e.length !== 0),
-        nsfw,
-      },
-    };
-    history.push(to);
+    setReviewIsInvoked(true);
   };
+
+  const updateTitle = (newTitle: string) => {
+    setReviewIsInvoked(false);
+    setTitle(newTitle);
+  };
+
+  const updatePrice = (newPrice: number) => {
+    setReviewIsInvoked(false);
+    setPrice(newPrice);
+  };
+
+  const updateDescription = (newDescription: string) => {
+    setReviewIsInvoked(false);
+    setDescription(newDescription);
+  };
+
+  const updateCategories = (newCategories: string[]) => {
+    setReviewIsInvoked(false);
+    setCategories(newCategories);
+  };
+
+  const updateFile = (newFile: File | null | undefined) => {
+    setReviewIsInvoked(false);
+    setFile(newFile);
+  };
+
+  useEffect(() => {
+    if (
+      !titleIsInvalid() &&
+      !priceIsInvalid() &&
+      !descriptionIsInvalid() &&
+      !categoriesAreInvalid() &&
+      !fileIsInvalid() &&
+      reviewIsInvoked
+    ) {
+      const to = {
+        pathname: '/publish/review',
+        file,
+        price,
+        metadata: {
+          title,
+          description,
+          categories: categories.filter((e) => e.length !== 0),
+          nsfw,
+        },
+      };
+      history.push(to);
+    }
+  });
 
   return (
     <div>
@@ -235,85 +294,102 @@ function Publish() {
         <h1 className="title" style={{ marginTop: '20px' }}>
           Encrypt your Content
         </h1>
-        <h1 className="subtitle" style={{ marginBottom: '100px' }}>
+        <h1 className="subtitle" style={{ marginBottom: '75px' }}>
           Fill in the information that best describes your content piece
         </h1>
         <div className="columns is-fullheight is-centered">
           <div className="column">
             <div className="columns is-centered">
-              <div className="column is-three-fifths">
+              <div className="column is-two-thirds-widescreen is-three-fifths-desktop">
                 <div className="field">
                   <label className="label">Title</label>
-                  <div className={`control has-icons-right`}>
+                  <div className="control has-icons-right">
                     <input
-                      className={`input ${titleIsInvalid ? 'is-danger' : ''}`}
+                      className={`input ${titleIsInvalid() ? 'is-danger' : ''}`}
                       type="text"
                       placeholder="Title of your creation"
                       value={title}
-                      onChange={(e) => setTitle(e.target.value)}
+                      onChange={(e) => updateTitle(e.target.value)}
                     />
-                    {titleIsInvalid && (
+                    {titleIsInvalid() && (
                       <span className="icon is-small is-right">
                         <i className="fas fa-exclamation-triangle"></i>
                       </span>
                     )}
                   </div>
-                  {titleIsInvalid && (
-                    <p className="help is-danger">This title is invalid</p>
+                  {titleIsInvalid() && (
+                    <p className="help is-danger">Title is invalid</p>
                   )}
                 </div>
               </div>
               <div className="column">
                 <label className="label">Price</label>
                 <div className="field has-addons">
-                  <p className="control is-expanded">
+                  <div className="control has-icons-right is-expanded">
                     <input
-                      className="input"
+                      className={`input ${priceIsInvalid() ? 'is-danger' : ''}`}
                       type="number"
                       min="0"
                       placeholder="Set price"
                       value={price}
-                      onChange={(e) => setPrice(Number(e.target.value))}
+                      onChange={(e) => updatePrice(Number(e.target.value))}
                     />
-                  </p>
-                  <p className="control">
+                    {priceIsInvalid() && (
+                      <span className="icon is-small is-right">
+                        <i className="fas fa-exclamation-triangle"></i>
+                      </span>
+                    )}
+                  </div>
+                  <div className="control">
                     <p className="button is-static">
                       <strong>DAI</strong>
                     </p>
-                  </p>
+                  </div>
                 </div>
+                {priceIsInvalid() && (
+                  <p className="help is-danger" style={{ marginTop: '-8px' }}>
+                    Price is invalid
+                  </p>
+                )}
               </div>
             </div>
             <div className="field">
               <label className="label">Description</label>
               <div className="control">
                 <textarea
-                  className="textarea has-fixed-size"
+                  className={`textarea has-fixed-size ${
+                    descriptionIsInvalid() ? 'is-danger' : ''
+                  }`}
                   placeholder="Describe what your piece is (max 250 characters)"
                   value={description}
-                  onChange={(e) => setDescription(e.target.value)}
+                  onChange={(e) => updateDescription(e.target.value)}
                 ></textarea>
               </div>
+              {descriptionIsInvalid() && (
+                <p className="help is-danger">Description is invalid</p>
+              )}
             </div>
             <div className="field">
               <label className="label">Categories</label>
               <div className={`control has-icons-right`}>
                 <input
-                  className={`input ${false ? 'is-danger' : ''}`}
+                  className={`input ${
+                    categoriesAreInvalid() ? 'is-danger' : ''
+                  }`}
                   type="text"
-                  placeholder="Categories (enter your own, separated by commas)"
+                  placeholder="Categories (max 5) (enter your own, separated by commas)"
                   value={categories.join(',')}
                   onChange={(e) =>
-                    setCategories(e.target.value.split(/\s*,\s*/))
+                    updateCategories(e.target.value.split(/\s*,\s*/))
                   }
                 />
-                {false && (
+                {categoriesAreInvalid() && (
                   <span className="icon is-small is-right">
                     <i className="fas fa-exclamation-triangle"></i>
                   </span>
                 )}
               </div>
-              {false && (
+              {categoriesAreInvalid() && (
                 <p className="help is-danger">
                   The entered categories are invalid
                 </p>
@@ -334,13 +410,17 @@ function Publish() {
             </div>
           </div>
           <div className="column">
-            <div className="field">
-              <div className="file is-medium is-boxed is-centered has-name">
+            <div className="field" style={{ marginTop: '32px' }}>
+              <div
+                className={`file is-medium is-boxed is-centered has-name ${
+                  fileIsInvalid() ? 'is-danger' : ''
+                }`}
+              >
                 <label className="file-label">
                   <input
                     className="file-input"
                     type="file"
-                    onChange={(e) => setFile(e.target.files?.item(0))}
+                    onChange={(e) => updateFile(e.target.files?.item(0))}
                   />
                   <span className="file-cta">
                     <span className="file-icon">
@@ -351,6 +431,11 @@ function Publish() {
                   <span className="file-name">{file?.name && file?.name}</span>
                 </label>
               </div>
+              {fileIsInvalid() && (
+                <p className="help is-danger" style={{ textAlign: 'center' }}>
+                  No file selected
+                </p>
+              )}
             </div>
             <div className="buttons is-centered">
               <button
@@ -427,7 +512,7 @@ function Review(props: any) {
         <h1 className="title" style={{ marginTop: '20px' }}>
           Review
         </h1>
-        <h1 className="subtitle" style={{ marginBottom: '100px' }}>
+        <h1 className="subtitle" style={{ marginBottom: '75px' }}>
           Review the information for your content piece
         </h1>
         <div className="columns is-fullheight is-centered">
@@ -453,7 +538,9 @@ function Review(props: any) {
               <div className={`control has-icons-right`}>
                 <div className="tags">
                   {metadata?.categories.map((c: any) => (
-                    <span className="tag is-primary">{c}</span>
+                    <span key={c} className="tag is-primary">
+                      {c}
+                    </span>
                   ))}
                 </div>
               </div>
@@ -469,7 +556,7 @@ function Review(props: any) {
             </div>
           </div>
           <div className="column">
-            <div className="field">
+            <div className="field" style={{ marginTop: '32px' }}>
               <div className="file is-medium is-boxed is-centered has-name">
                 <label className="file-label">
                   <input className="file-input" type="file" disabled />
@@ -512,8 +599,37 @@ function Account() {
   const [about, setAbout] = useState('Loading..');
   const [file, setFile] = useState<File | null>();
   const [loading, setLoading] = useState(true);
+  const [saveIsInvoked, setSaveIsInvoked] = useState(false);
 
-  // TODO: add field verification
+  const nameIsInvalid = () =>
+    (name.length === 0 || !name.match(/^[0-9a-z]+$/)) && saveIsInvoked;
+  const websiteIsInvalid = () =>
+    website.length !== 0 && !isURL(website) && saveIsInvoked;
+  const aboutIsInvalid = () =>
+    (about.length === 0 || about.length > 250) && saveIsInvoked;
+  const fileIsInvalid = () => false;
+
+  const updateName = (newName: string) => {
+    setSaveIsInvoked(false);
+    setName(newName);
+  };
+  const updateWebsite = (newWebsite: string) => {
+    setSaveIsInvoked(false);
+    setWebsite(newWebsite);
+  };
+  const updateAbout = (newAbout: string) => {
+    setSaveIsInvoked(false);
+    setAbout(newAbout);
+  };
+
+  const updateFile = (newFile: File | null | undefined) => {
+    setSaveIsInvoked(false);
+    setFile(newFile);
+  };
+
+  const save = () => {
+    setSaveIsInvoked(true);
+  };
 
   useEffect(() => {
     (async () => {
@@ -528,21 +644,9 @@ function Account() {
       }
     })();
   }, [space]);
-  const nameIsInvalid = false;
-
-  const handleNameChange = (e: any) => {
-    setName(e.target.value);
-  };
-
-  const handleWebsiteChange = (e: any) => {
-    setWebsite(e.target.value);
-  };
-
-  const handleAboutChange = (e: any) => {
-    setAbout(e.target.value);
-  };
 
   const updateAccount = async () => {
+    // TODO: check name is not taken
     space?.public.set('name', name);
     space?.public.set('website', website);
     space?.public.set('about', about);
@@ -556,36 +660,48 @@ function Account() {
     }
   };
 
+  useEffect(() => {
+    if (
+      !nameIsInvalid() &&
+      !websiteIsInvalid() &&
+      !aboutIsInvalid() &&
+      !fileIsInvalid() &&
+      saveIsInvoked
+    ) {
+      updateAccount();
+    }
+  });
+
   return (
     <div>
       <section className="section">
         <h1
           className="title"
-          style={{ marginBottom: '100px', marginTop: '20px' }}
+          style={{ marginBottom: '104px', marginTop: '20px' }}
         >
           Your Profile
         </h1>
         <div className="columns is-fullheight is-centered">
-          <div className="column is-three-fifths">
+          <div className="column">
             <div className="field">
               <label className="label">Name</label>
               <div
                 className={`control ${loading && 'is-loading'} has-icons-right`}
               >
                 <input
-                  className={`input ${nameIsInvalid ? 'is-danger' : ''}`}
+                  className={`input ${nameIsInvalid() ? 'is-danger' : ''}`}
                   type="text"
                   placeholder="Your account name"
                   value={name}
-                  onChange={handleNameChange}
+                  onChange={(e) => updateName(e.target.value)}
                 />
-                {nameIsInvalid && (
+                {nameIsInvalid() && (
                   <span className="icon is-small is-right">
                     <i className="fas fa-exclamation-triangle"></i>
                   </span>
                 )}
               </div>
-              {nameIsInvalid && (
+              {nameIsInvalid() && (
                 <p className="help is-danger">This name is invalid</p>
               )}
             </div>
@@ -595,19 +711,19 @@ function Account() {
                 className={`control ${loading && 'is-loading'} has-icons-right`}
               >
                 <input
-                  className={`input ${false ? 'is-danger' : ''}`}
+                  className={`input ${websiteIsInvalid() ? 'is-danger' : ''}`}
                   type="text"
                   placeholder="Your website"
                   value={website}
-                  onChange={handleWebsiteChange}
+                  onChange={(e) => updateWebsite(e.target.value)}
                 />
-                {false && (
+                {websiteIsInvalid() && (
                   <span className="icon is-small is-right">
                     <i className="fas fa-exclamation-triangle"></i>
                   </span>
                 )}
               </div>
-              {false && (
+              {websiteIsInvalid() && (
                 <p className="help is-danger">This website is invalid</p>
               )}
             </div>
@@ -620,29 +736,35 @@ function Account() {
               >
                 <textarea
                   className={`textarea has-fixed-size ${
-                    false ? 'is-danger' : ''
+                    aboutIsInvalid() ? 'is-danger' : ''
                   }`}
                   placeholder="Say something about yourself"
                   value={about}
-                  onChange={handleAboutChange}
+                  onChange={(e) => updateAbout(e.target.value)}
                 />
-                {false && (
+                {aboutIsInvalid() && (
                   <span className="icon is-small is-right">
                     <i className="fas fa-exclamation-triangle"></i>
                   </span>
                 )}
               </div>
-              {false && <p className="help is-danger">About text is invalid</p>}
+              {aboutIsInvalid() && (
+                <p className="help is-danger">About text is invalid</p>
+              )}
             </div>
           </div>
           <div className="column">
             <div className="field" style={{ marginTop: '32px' }}>
-              <div className="file is-medium is-boxed is-centered has-name">
+              <div
+                className={`file is-medium is-boxed is-centered has-name ${
+                  fileIsInvalid() ? 'is-danger' : ''
+                }`}
+              >
                 <label className="file-label">
                   <input
                     className="file-input"
                     type="file"
-                    onChange={(e) => setFile(e.target.files?.item(0))}
+                    onChange={(e) => updateFile(e.target.files?.item(0))}
                   />
                   <span className="file-cta">
                     <span className="file-icon">
@@ -653,11 +775,16 @@ function Account() {
                   <span className="file-name">{file?.name && file?.name}</span>
                 </label>
               </div>
+              {fileIsInvalid() && (
+                <p className="help is-danger" style={{ textAlign: 'center' }}>
+                  No file selected
+                </p>
+              )}
             </div>
             <div className="buttons is-centered">
               <button
                 className="button is-medium is-primary is-rounded"
-                onClick={updateAccount}
+                onClick={save}
                 style={{ marginTop: '82px' }}
               >
                 Save
