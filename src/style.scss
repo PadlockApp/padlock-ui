@@ -1,0 +1,110 @@
+@import url('https://fonts.googleapis.com/css?family=Montserrat:400,800');
+$fontFamily: Nunito, sans-serif;
+
+$padlock: rgb(60, 60, 60);
+
+#app {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  // background: #f7f7f7;
+  background: #96deda;
+  font-family: $fontFamily;
+  .window {
+    background: #fff;
+    height: 700px;
+    border-radius: 40px;
+    box-shadow: rgba(0, 0, 0, 0.01) 0px 0px 1px, rgba(0, 0, 0, 0.04) 0px 4px 8px,
+      rgba(0, 0, 0, 0.04) 0px 16px 24px, rgba(0, 0, 0, 0.01) 0px 24px 32px;
+  }
+}
+
+.is-fullheight {
+  height: 100% !important;
+}
+
+.is-padlock {
+  color: $padlock;
+}
+
+.padlock-logo {
+  width: 85px;
+  margin-bottom: 10px;
+}
+
+.secret-network-logo {
+  width: 160px;
+  margin-bottom: 40px;
+}
+
+.menu {
+  background: linear-gradient(to bottom right, #1cd8d2, #93edc7) !important;
+  height: 100% !important;
+  padding-left: 30px !important;
+  padding-right: 30px !important;
+  padding-top: 45px !important;
+  border-top-left-radius: 40px !important;
+  border-bottom-left-radius: 40px !important;
+}
+
+.column.is-4 {
+  max-width: 280px !important;
+}
+
+.profile {
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 120px;
+  text-align: center;
+  flex-direction: column;
+  .profile-name {
+    margin-top: 12px;
+  }
+}
+
+.file-name {
+  width: 250px;
+}
+
+a {
+  color: $padlock !important;
+  opacity: 0.6 !important;
+  font-weight: 800 !important;
+  margin-bottom: 8px;
+}
+
+span {
+  margin-left: 5px !important;
+}
+
+a.is-active {
+  opacity: 1 !important;
+  background: none !important;
+}
+
+.card-container {
+  margin-top: 35px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, 300px);
+  grid-gap: 1.2em;
+  height: 520px;
+  padding-right: 20px;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  &::-webkit-scrollbar {
+    width: 0.6em;
+  }
+  &::-webkit-scrollbar-track {
+    background: #eeeff3;
+    border-radius: 20px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #b5bbcc;
+    border-radius: 20px;
+  }
+}
+
+.card {
+  height: max-content;
+}
