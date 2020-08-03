@@ -119,6 +119,13 @@ function App() {
                       <i className="fas fa-search"></i> <span>Browse</span>
                     </NavLink>
                   </div>
+                  <div className="signature">
+                    <img
+                      className="padlock-logo-small"
+                      src="https://i.imgur.com/E4Mu7rR.png"
+                      alt="padlock logo"
+                    />
+                  </div>
                 </ul>
               </aside>
             </div>
@@ -166,7 +173,7 @@ function Welcome() {
           <p>Protected by the</p>
           <img
             className="secret-network-logo"
-            src="https://i.imgur.com/phjTAMI.png"
+            src="https://i.imgur.com/ii8omEP.png"
             alt="secret network logo"
           />
           <p>Your auto-generated Secret Network address:</p>

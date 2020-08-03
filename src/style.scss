@@ -30,9 +30,18 @@ $breakpoint: 768px;
   color: $padlock;
 }
 
+.signature {
+  position: absolute;
+  bottom: 40px;
+  left: 110px;
+}
+
 .padlock-logo {
   width: 85px;
   margin-bottom: 10px;
+  &-small {
+    width: 60px;
+  }
 }
 
 .secret-network-logo {
@@ -94,6 +103,10 @@ $breakpoint: 768px;
     position: absolute;
     top: 0 px;
     right: 25px;
+  }
+
+  .signature {
+    display: none;
   }
 }
 
