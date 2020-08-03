@@ -64,40 +64,49 @@ async function getIdentity(space: any) {
 
 async function getSecretWallet(space: any) {
   const cachedWallet = await space.private.get('user-secret-wallet');
+  let mnemonic;
   if (cachedWallet !== null) {
-    const pen = await Secp256k1Pen.fromMnemonic(cachedWallet);
-    const pubkey = encodeSecp256k1Pubkey(pen.pubkey);
-    const address = pubkeyToAddress(pubkey, 'secret');
-    const signer = (signBytes: Uint8Array): Promise<StdSignature> =>
-      pen.sign(signBytes);
-
-    const wallet = { address, signer };
-    return wallet;
+    mnemonic = cachedWallet;
+  } else {
+    mnemonic = Bip39.encode(Random.getBytes(16)).toString();
   }
-  const mnemonic = Bip39.encode(Random.getBytes(16)).toString();
-  const pen = await Secp256k1Pen.fromMnemonic(mnemonic);
-  const pubkey = encodeSecp256k1Pubkey(pen.pubkey);
+  const signingPen = await Secp256k1Pen.fromMnemonic(mnemonic);
+  const pubkey = encodeSecp256k1Pubkey(signingPen.pubkey);
   const address = pubkeyToAddress(pubkey, 'secret');
-  const signer = (signBytes: Uint8Array): Promise<StdSignature> =>
-    pen.sign(signBytes);
-
   const txEncryptionSeed = EnigmaUtils.GenerateNewSeed();
+  
   const client = new SigningCosmWasmClient(
         config.httpUrl,
         address,
-        signer,
+        (signBytes) => signingPen.sign(signBytes),
         txEncryptionSeed, config.fees
     );
-    debugger
 
-  //todo remove, just testing the client works
+  const codeId = 1;
+  const contractData = await client.getContracts(codeId);
+
+  // Query the account, see if it has funds etc
+  const accountData = await client.getAccount(address);
+  console.log(`accountData=${JSON.stringify(accountData)}`)
+
+  // query the contract
   const itemId = 1;
-  const contractAddress = "secret18vd8fpwxzck93qlwghaj6arh4p7c5n8978vsyg";
+  const contractAddress = contractData[0].address;
   const isWhitelistedMsg = {"IsWhitelisted": {"address": address, "id": itemId}}
   let result = await client.queryContractSmart(contractAddress, isWhitelistedMsg);
   console.log(`IsWhitelisted ${address}: ${result.whitelisted}`);
+
+
+  if (result.whitelisted) {
+    // get the private key
+    const keyRequestMsg = {"RequestSharedKey": {"id": itemId}}
+    result = await client.execute(contractAddress, keyRequestMsg);
+    console.log(`SharedKey result: ${JSON.stringify(result)}`);
+  }
+
   
-  const wallet = { address, signer };
+  // return the client
+  const wallet = { address, client };
   await space.private.set('user-secret-wallet', mnemonic);
   return wallet;
 }

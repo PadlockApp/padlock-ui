@@ -34,8 +34,8 @@ const local: AppConfig = {
 
 // todo demo config
 const demo: AppConfig = {
-  httpUrl: "http://localhost:1317",
-  faucetUrl: "http://localhost:8000/credit",
+  httpUrl: "http://secret.padlockdev.org",
+  faucetUrl: "http://faucet.padlockdev.org/credit",
   codeId: 1,
   fees: customFees,
 };
