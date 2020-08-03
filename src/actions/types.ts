@@ -23,19 +23,20 @@ export type Ffs = {
   list: () => Promise<ffsTypes.ListAPIResponse.AsObject>;
   id: () => Promise<ffsTypes.IDResponse.AsObject>;
   addrs: () => Promise<ffsTypes.AddrsResponse.AsObject>;
-  defaultConfig: () => Promise<ffsTypes.DefaultConfigResponse.AsObject>;
+  defaultStorageConfig: () => Promise<
+    ffsTypes.DefaultStorageConfigResponse.AsObject
+  >;
   newAddr: (
     name: string,
     type?: 'bls' | 'secp256k1' | undefined,
     makeDefault?: boolean | undefined
   ) => Promise<ffsTypes.NewAddrResponse.AsObject>;
-  getDefaultCidConfig: (
+  getStorageConfig: (
     cid: string
-  ) => Promise<ffsTypes.GetDefaultCidConfigResponse.AsObject>;
-  getCidConfig: (
-    cid: string
-  ) => Promise<ffsTypes.GetCidConfigResponse.AsObject>;
-  setDefaultConfig: (config: ffsTypes.DefaultConfig.AsObject) => Promise<void>;
+  ) => Promise<ffsTypes.GetStorageConfigResponse.AsObject>;
+  setDefaultStorageConfig: (
+    config: ffsTypes.StorageConfig.AsObject
+  ) => Promise<void>;
   show: (cid: string) => Promise<ffsTypes.ShowResponse.AsObject>;
   info: () => Promise<ffsTypes.InfoResponse.AsObject>;
   watchJobs: (
@@ -52,23 +53,29 @@ export type Ffs = {
     cid1: string,
     cid2: string
   ) => Promise<ffsTypes.ReplaceResponse.AsObject>;
-  pushConfig: (
+  pushStorageConfig: (
     cid: string,
-    ...opts: ffsOptions.PushConfigOption[]
-  ) => Promise<ffsTypes.PushConfigResponse.AsObject>;
+    ...opts: ffsOptions.PushStorageConfigOption[]
+  ) => Promise<ffsTypes.PushStorageConfigResponse.AsObject>;
   remove: (cid: string) => Promise<void>;
   get: (cid: string) => Promise<Uint8Array>;
   sendFil: (from: string, to: string, amount: number) => Promise<void>;
   close: () => Promise<void>;
-  addToHot: (input: Uint8Array) => Promise<ffsTypes.AddToHotResponse.AsObject>;
-  listPayChannels: () => Promise<ffsTypes.PaychInfo.AsObject[]>;
+  stage: (input: Uint8Array) => Promise<ffsTypes.StageResponse.AsObject>;
+  listPayChannels: () => Promise<ffsTypes.ListPayChannelsResponse.AsObject>;
   createPayChannel: (
     from: string,
     to: string,
     amt: number
   ) => Promise<ffsTypes.CreatePayChannelResponse.AsObject>;
   redeemPayChannel: (payChannelAddr: string) => Promise<void>;
-  showAll: () => Promise<ffsTypes.CidInfo.AsObject[]>;
+  listStorageDealRecords: (
+    ...opts: ffsOptions.ListDealRecordsOption[]
+  ) => Promise<ffsTypes.ListStorageDealRecordsResponse.AsObject>;
+  listRetrievalDealRecords: (
+    ...opts: ffsOptions.ListDealRecordsOption[]
+  ) => Promise<ffsTypes.ListRetrievalDealRecordsResponse.AsObject>;
+  showAll: () => Promise<ffsTypes.ShowAllResponse.AsObject>;
 };
 
 // Apollo Client type

@@ -97,9 +97,9 @@
     ipfs-did-document "^1.2.3"
 
 "@apollo/client@^3.0.2":
-  version "3.1.1"
-  resolved "https://registry.yarnpkg.com/@apollo/client/-/client-3.1.1.tgz#7d57d037be8ee93694fbf82579f703e635c836c1"
-  integrity sha512-c5DxrU81p0B5BsyBXm+5uPJqLCX2epnBsd87PXfRwzDLbp/NiqnWp6a6c5vT5EV2LwJuCq1movmKthoy0gFb0w==
+  version "3.1.2"
+  resolved "https://registry.yarnpkg.com/@apollo/client/-/client-3.1.2.tgz#e384f691706c46aef4d9234b63a03ccc06e9c33c"
+  integrity sha512-GaA/J0CDSSNe0HVm1abeOIJA3M4fs9Ih7wF2z1AI2SLqv5TBLvwBxh0+0+jCSntPZ3gnDQvR7MHjmXota5V1LQ==
   dependencies:
     "@types/zen-observable" "^0.8.0"
     "@wry/context" "^0.5.2"
@@ -2453,10 +2453,10 @@
   dependencies:
     "@textile/security" "^0.2.4"
 
-"@textile/grpc-powergate-client@0.1.1":
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/@textile/grpc-powergate-client/-/grpc-powergate-client-0.1.1.tgz#b85ab3184ec81bf905957862e320a143b5d41907"
-  integrity sha512-PJ1VIKALEvYxGHi70y1tIBOFrpK7e4XvAGOfDnBpiVXqzjlTiNijDxzgJIWjNXLugkp4e1QZVrbJ7LG0+EQfBg==
+"@textile/grpc-powergate-client@0.2.0":
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/@textile/grpc-powergate-client/-/grpc-powergate-client-0.2.0.tgz#2f3f6b9b2fcf23a8c012cf5cec9b60dce41d1160"
+  integrity sha512-h/AHAPVGQwL6QPoBCCAdqF+bbfRl6Q0eTw4a3mJnjD0F3ILG+zH8qjJ6dNOSPMOcEJjTGUzma0GqN/+nCvI00g==
   dependencies:
     "@improbable-eng/grpc-web" "^0.13.0"
     "@types/google-protobuf" "^3.7.2"
@@ -2520,13 +2520,13 @@
     multiaddr "^7.4.2"
     varint "^5.0.0"
 
-"@textile/powergate-client@^0.1.0-beta.14":
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/@textile/powergate-client/-/powergate-client-0.1.0.tgz#e1a2787c8fe170646fb854dcfbd012862aac9bc6"
-  integrity sha512-PX4WNkLi2ZWQuLQvQ47+LaTlT3X3FbFP7JouBYZoQEFvN1DmyJyDHkClgxqSD5s+ngmDpyjx2wTNaru6qUYfGQ==
+"@textile/powergate-client@^0.2.0":
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/@textile/powergate-client/-/powergate-client-0.2.0.tgz#1edc6ee4b5cbc30d9e6f630124ecaec115f2b412"
+  integrity sha512-GTGzGKx4x4GZAXov9ccpCEogu8iqHx4vVz30eG53vR8SZR+Bgbi3a/lLjGA2mrKaFhBSjwRkz7qmI55lMxy5LQ==
   dependencies:
     "@improbable-eng/grpc-web-node-http-transport" "^0.12.0"
-    "@textile/grpc-powergate-client" "0.1.1"
+    "@textile/grpc-powergate-client" "0.2.0"
 
 "@textile/security@^0.2.1", "@textile/security@^0.2.4":
   version "0.2.4"

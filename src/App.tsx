@@ -458,7 +458,7 @@ function Review(props: any) {
   const ffs = useSelector((state: State) => state.ffs);
   const eth = useSelector((state: State) => state.eth);
 
-  const { file, price, metadata } = props.location;
+  const { file, price, metadata }: { file: File, price: number, metadata: any } = props.location;
 
   const reset = () => {
     history.goBack();
@@ -488,11 +488,11 @@ function Review(props: any) {
 
     // todo upload encrypted data
 
-    const arrayBuf = await file?.arrayBuffer();
-    const { cid } = (await ffs?.addToHot(
-      Buffer.from(arrayBuf as ArrayBuffer)
+    const buffer = Buffer.from(data);
+    const { cid } = (await ffs?.stage(
+      buffer
     )) as any;
-    await ffs?.pushConfig(cid);
+    await ffs?.pushStorageConfig(cid);
     ffs?.watchLogs((logEvent) => {
       console.log(`received event for cid ${logEvent.cid}`);
       console.log(logEvent);
