@@ -3,7 +3,7 @@ import { Client, ThreadID } from '@textile/hub';
 import Web3Type from 'web3';
 import { Contract as ContractType } from 'web3-eth-contract';
 import { NormalizedCacheObject } from 'apollo-cache-inmemory';
-import ApolloClient from 'apollo-client';
+import { ApolloClient } from 'apollo-client';
 
 // Web3 type
 export type Web3 = Web3Type;
