@@ -901,21 +901,28 @@ function Browse() {
         </div>
         <div className="card-container">
           {data?.creations
-            // .filter((e: any) =>
-            //   // TODO: use IPFS-based metadata description
-            //   // (e.description as string)
-            //   //   .toLowerCase()
-            //   //   .includes(searchFilter) ||
-            //   (creators[e.id]?.name as string)
-            //     ?.toLowerCase()
-            //     .includes(searchFilter)
-            // )
-            // TODO: pull metadata from IPFS and display + add buy functionality to each card + display padlock as preview
+            .filter(
+              (e: any) =>
+                (creationData[e.id]?.metadata?.title as string)
+                  ?.toLowerCase()
+                  .includes(searchFilter.toLowerCase()) ||
+                (creationData[e.id]?.metadata?.description as string)
+                  ?.toLowerCase()
+                  .includes(searchFilter.toLowerCase()) ||
+                (creationData[e.id]?.metadata
+                  ?.categories as string[])?.includes(
+                  searchFilter.toLowerCase()
+                ) ||
+                (creationData[e.id]?.profile?.name as string)
+                  ?.toLowerCase()
+                  .includes(searchFilter.toLowerCase())
+            )
+            // TODO: add buy functionality to each card
             .map((e: any) => {
               return (
                 <div key={e.id} className="card">
                   <div className="card-image">
-                    <figure className="image is-4by3">
+                    <figure className="image is-16by9">
                       <img
                         src="https://i.imgur.com/qgYXeJy.png"
                         alt="Placeholder"
@@ -924,34 +931,42 @@ function Browse() {
                   </div>
                   <div className="card-content">
                     <div className="content">
-                      <div>by: {creationData[e.id]?.profile?.name}</div>
+                      <div className="media-content">
+                        <div>
+                          <label className="checkbox subtitle is-6">
+                            <input
+                              type="checkbox"
+                              disabled
+                              checked={creationData[e.id]?.metadata?.nsfw}
+                            />
+                            &nbsp;
+                            <span>NSFW</span>
+                          </label>
+                        </div>
+                        <div className="tags">
+                          {creationData[e.id]?.metadata?.categories.map(
+                            (c: any) => (
+                              <span key={c} className="tag is-primary">
+                                {c}
+                              </span>
+                            )
+                          )}
+                        </div>
+                        <p className="subtitle is-6">
+                          {creationData[e.id]?.profile?.name}
+                        </p>
+                      </div>
                       <div className="title is-5">
                         {creationData[e.id]?.metadata?.title}
                       </div>
-                      <div className="subtitle is-6">
+                      <div className="content">
                         {creationData[e.id]?.metadata?.description}
                       </div>
-                      <div className="tags">
-                        {creationData[e.id]?.metadata?.categories.map(
-                          (c: any) => (
-                            <span key={c} className="tag is-primary">
-                              {c}
-                            </span>
-                          )
-                        )}
-                      </div>
-                      <div>
-                        <label className="checkbox subtitle is-6">
-                          <input
-                            type="checkbox"
-                            disabled
-                            checked={creationData[e.id]?.metadata?.nsfw}
-                          />
-                          &nbsp;
-                          <span>NSFW</span>
-                        </label>
-                      </div>
-                      <span className="tag is-warning">{e.price} DAI</span>
+
+                      <span className="tag is-medium is-warning subtitle">{e.price} DAI</span>
+                      <button className="button is-fullwidth is-primary is-rounded">
+                        Purchase
+                      </button>
                     </div>
                   </div>
                 </div>
