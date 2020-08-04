@@ -14,6 +14,7 @@ import Web3 from 'web3';
 import { AbiItem } from 'web3-utils';
 import abi from './abis/Contract.json';
 import { config } from "./config";
+import ky from "ky";
 const { EnigmaUtils, Secp256k1Pen, SigningCosmWasmClient, pubkeyToAddress, encodeSecp256k1Pubkey } = require("secretjs");
 
 const getWeb3 = () =>
@@ -69,23 +70,31 @@ async function getSecretWallet(space: any) {
   const codeId = 1;
   const contractData = await client.getContracts(codeId);
 
-  // Query the account, see if it has funds etc
-  const accountData = await client.getAccount(address);
-  console.log(`accountData=${JSON.stringify(accountData)}`)
+  ////// todo Just some test snippets to find new homes :)
+  try {
+    // Query the account, see if it has funds and request from faucet if needed
+    const acct = await client.getAccount(address);
+    console.log(`Secret account=${JSON.stringify(acct)}`)
+    if (!acct?.balance?.length) {
+      await ky.post(config.faucetUrl, { json: { ticker: "SCRT", address } });
+    }
 
-  // query the contract
-  const itemId = 1;
-  const contractAddress = contractData[0].address;
-  const isWhitelistedMsg = {"IsWhitelisted": {"address": address, "id": itemId}}
-  let result = await client.queryContractSmart(contractAddress, isWhitelistedMsg);
-  console.log(`IsWhitelisted ${address}: ${result.whitelisted}`);
+    // query the contract
+    const itemId = 1;
+    const contractAddress = contractData[0].address;
+    const isWhitelistedMsg = {"IsWhitelisted": {"address": address, "id": itemId}}
+    let result = await client.queryContractSmart(contractAddress, isWhitelistedMsg);
+    console.log(`IsWhitelisted ${address}: ${result.whitelisted}`);
 
 
-  if (result.whitelisted) {
-    // get the private key
-    const keyRequestMsg = {"RequestSharedKey": {"id": itemId}}
-    result = await client.execute(contractAddress, keyRequestMsg);
-    console.log(`SharedKey result: ${JSON.stringify(result)}`);
+    if (result.whitelisted) {
+      // get the private key
+      const keyRequestMsg = {"RequestSharedKey": {"id": itemId}}
+      result = await client.execute(contractAddress, keyRequestMsg);
+      console.log(`SharedKey result: ${JSON.stringify(result)}`);
+    }
+  } catch(error) {
+    console.error(error)
   }
 
   
