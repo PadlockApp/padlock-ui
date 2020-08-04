@@ -1,15 +1,11 @@
 import { fork, put } from 'redux-saga/effects';
 import {
   ffsConnected,
-  dbConnected,
   secretConnected,
   spaceConnected,
   ethConnected,
 } from './actions';
 import { createPow } from '@textile/powergate-client';
-import { Client, KeyInfo, ThreadID } from '@textile/hub';
-import { Libp2pCryptoIdentity } from '@textile/threads-core';
-import { FileSchema } from './schemas';
 import { StdSignature } from 'secretjs/types/types';
 import { Bip39, Random } from '@iov/crypto';
 //@ts-ignore
@@ -48,19 +44,7 @@ const getWeb3 = () =>
 const {
   REACT_APP_POW_HOST,
   REACT_APP_POW_TOKEN,
-  REACT_APP_DB_USER_API_KEY,
-  REACT_APP_DB_USER_API_SECRET,
 } = process.env;
-
-async function getIdentity(space: any) {
-  const cachedIdentity = await space.private.get('user-private-identity');
-  if (cachedIdentity !== null) {
-    return Libp2pCryptoIdentity.fromString(cachedIdentity);
-  }
-  const identity = await Libp2pCryptoIdentity.fromRandom();
-  await space.private.set('user-private-identity', identity.toString());
-  return identity;
-}
 
 async function getSecretWallet(space: any) {
   const cachedWallet = await space.private.get('user-secret-wallet');
@@ -118,15 +102,6 @@ function* init() {
   const { ffs } = pow;
   yield put(ffsConnected(ffs));
 
-  const keyInfo: KeyInfo = {
-    // Using insecure keys
-    key: REACT_APP_DB_USER_API_KEY as string,
-    secret: REACT_APP_DB_USER_API_SECRET as string,
-    // @ts-ignore
-    type: 1,
-  };
-  const db: Client = yield Client.withKeyInfo(keyInfo);
-
   // web3 client
   const web3 = (yield getWeb3()) as Web3;
   const contract = new web3.eth.Contract(
@@ -147,22 +122,6 @@ function* init() {
   // get secret wallet
   const secretWallet = yield getSecretWallet(space);
   yield put(secretConnected(secretWallet));
-
-  // TODO: use MetaMask to generate identity instead of Libp2pCryptoIdentity
-  const identity: Libp2pCryptoIdentity = yield getIdentity(space);
-  yield db.getToken(identity);
-  const { listList: threads } = yield db.listThreads();
-  if (threads.length === 0) {
-    yield db.newDB();
-  }
-  const threadId = (yield db.listThreads()).listList[0].id;
-  const thread: ThreadID = yield ThreadID.fromString(threadId as string);
-  try {
-    yield db?.getCollectionIndexes(thread, 'files');
-  } catch (e) {
-    yield db?.newCollection(thread, 'files', FileSchema);
-  }
-  yield put(dbConnected(db, thread));
 }
 
 function* saga() {

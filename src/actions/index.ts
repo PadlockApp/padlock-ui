@@ -2,16 +2,12 @@ import './types';
 import {
   ETH_CONNECTED,
   SPACE_CONNECTED,
-  DB_CONNECTED,
   FFS_CONNECTED,
   FAILURE,
-  DbConnected,
   FfsConnected,
   Failure,
   Web3,
   Contract,
-  Db,
-  ThreadID,
   Ffs,
   SecretConnected,
   SECRET_CONNECTED,
@@ -28,12 +24,6 @@ export const ethConnected = (web3: Web3, contract: Contract): EthConnected => ({
 export const spaceConnected = (space: any): SpaceConnected => ({
   type: SPACE_CONNECTED,
   space,
-});
-
-export const dbConnected = (db: Db, thread: ThreadID): DbConnected => ({
-  type: DB_CONNECTED,
-  db,
-  thread,
 });
 
 export const secretConnected = (secretPair: any): SecretConnected => ({

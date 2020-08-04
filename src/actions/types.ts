@@ -1,5 +1,4 @@
 import { ffsTypes, ffsOptions } from '@textile/powergate-client';
-import { Client, ThreadID } from '@textile/hub';
 import Web3Type from 'web3';
 import { Contract as ContractType } from 'web3-eth-contract';
 import { NormalizedCacheObject } from 'apollo-cache-inmemory';
@@ -10,12 +9,6 @@ export type Web3 = Web3Type;
 
 // Contract type
 export type Contract = ContractType;
-
-// Db type
-export type Db = Client;
-
-// Thread ID type
-export { ThreadID } from '@textile/hub';
 
 // FFS type
 export type Ffs = {
@@ -87,9 +80,6 @@ export const ETH_CONNECTED = 'ETH_CONNECTED';
 // 3Box space connected
 export const SPACE_CONNECTED = 'SPACE_CONNECTED';
 
-// ThreadDB instance connected
-export const DB_CONNECTED = 'DB_CONNECTED';
-
 // Secret wallet connected
 export const SECRET_CONNECTED = 'SECRET_CONNECTED';
 
@@ -112,13 +102,6 @@ export interface SpaceConnected {
   space: any;
 }
 
-// DbConnected type
-export interface DbConnected {
-  type: typeof DB_CONNECTED;
-  db: Db;
-  thread: ThreadID;
-}
-
 // SecretConnected type
 export interface SecretConnected {
   type: typeof SECRET_CONNECTED;
@@ -138,4 +121,4 @@ export interface Failure {
 }
 
 // Generic state-changing Action type
-export type Action = DbConnected | FfsConnected | Failure;
+export type Action = FfsConnected | Failure;
