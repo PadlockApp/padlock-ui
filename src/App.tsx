@@ -458,7 +458,20 @@ function Review(props: any) {
   const ffs = useSelector((state: State) => state.ffs);
   const eth = useSelector((state: State) => state.eth);
 
-  const { file, price, metadata }: { file: File, price: number, metadata: any } = props.location;
+  const {
+    file,
+    price,
+    metadata,
+  }: {
+    file: File;
+    price: number;
+    metadata: {
+      title: string;
+      description: string;
+      categories: string[];
+      nsfw: boolean;
+    };
+  } = props.location;
 
   const reset = () => {
     history.goBack();
@@ -480,29 +493,30 @@ function Review(props: any) {
 
   const publish = async () => {
 
-    // todo get this from SecretContract on instantiate
+    // TODO: get this from SecretContract on instantiate
     const publickey = '0x04a8873dd159b2c241dcf56ff4baa59e84cc0124844340d6eec7b7f8fd795a921a7e5fc50298aa728ba9fe4561dd99cb2d52e6267a8e0549ccf34ca767b6593ab8';
 
     const rawText = await file?.text();
     const data = await encryptWithPublicKey(publickey, rawText);
 
-    // todo upload encrypted data
+    // TODO: upload encrypted data
+
+    // TODO: Add metadata to IPFS
 
     const buffer = Buffer.from(data);
-    const { cid } = (await ffs?.stage(
-      buffer
-    )) as any;
+    const { cid } = (await ffs?.stage(buffer)) as any;
     await ffs?.pushStorageConfig(cid);
     ffs?.watchLogs((logEvent) => {
       console.log(`received event for cid ${logEvent.cid}`);
       console.log(logEvent);
     }, cid);
     const from = (eth?.web3.currentProvider as any).selectedAddress;
+    // TODO: add metadata hash to eth call
     await eth?.contract.methods
-      .create(cid, 'hello', Eth.toEthUnits(price))
+      .create(cid, 'TODO_metadata_hash', Eth.toEthUnits(price))
       .send({ from });
-    // TODO: use the following info
     // TODO: add toasts + notify.js
+    // TODO: lock both buttons and push history to Done page after publishing
     console.log(file, price, JSON.stringify(metadata));
   };
 
@@ -647,6 +661,7 @@ function Account() {
 
   const updateAccount = async () => {
     // TODO: check name is not taken
+    // TODO: lock button and show toast after info are updated
     space?.public.set('name', name);
     space?.public.set('website', website);
     space?.public.set('about', about);
@@ -808,7 +823,7 @@ function Browse() {
         id
         creator
         hash
-        description
+        metadataHash
         price
       }
     }
@@ -864,15 +879,16 @@ function Browse() {
         </div>
         <div className="card-container">
           {data?.creations
-            .filter(
-              (e: any) =>
-                (e.description as string)
-                  .toLowerCase()
-                  .includes(searchFilter) ||
-                (creators[e.id]?.name as string)
-                  ?.toLowerCase()
-                  .includes(searchFilter)
-            )
+            // .filter((e: any) =>
+            //   // TODO: use IPFS-based metadata description
+            //   // (e.description as string)
+            //   //   .toLowerCase()
+            //   //   .includes(searchFilter) ||
+            //   (creators[e.id]?.name as string)
+            //     ?.toLowerCase()
+            //     .includes(searchFilter)
+            // )
+            // TODO: pull metadata from IPFS and display + add buy functionality to each card + display padlock as preview
             .map((e: any) => (
               <div key={e.id} className="card">
                 <div className="card-image">
@@ -887,7 +903,7 @@ function Browse() {
                   <div className="content">
                     <div>creator: {creators[e.id]?.name}</div>
                     {/* <div>CID hash: {e.hash}</div> */}
-                    <div>{e.description}</div>
+                    <div>{e.metadataHash}</div>
                     <span className="tag is-warning">{e.price} DAI</span>
                   </div>
                 </div>
