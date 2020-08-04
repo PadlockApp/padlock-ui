@@ -507,8 +507,8 @@ function Review(props: any) {
 
 
     const buffer = Buffer.from(data);
-    const { cid } = (await ffs?.stage(buffer)) as any;
-    await ffs?.pushStorageConfig(cid);
+    const { cid } = (await ffs?.addToHot(buffer)) as any;
+    await ffs?.pushConfig(cid);
     ffs?.watchLogs((logEvent) => {
       console.log(`received event for cid ${logEvent.cid}`);
       console.log(logEvent);
