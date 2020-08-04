@@ -32,10 +32,9 @@ const local: AppConfig = {
   fees: customFees,
 };
 
-// todo demo config
 const demo: AppConfig = {
-  httpUrl: "http://secret.padlockdev.org",
-  faucetUrl: "http://faucet.padlockdev.org/credit",
+  httpUrl: "https://secret.padlockdev.org",
+  faucetUrl: "https://faucet.padlockdev.org/credit",
   codeId: 1,
   fees: customFees,
 };
