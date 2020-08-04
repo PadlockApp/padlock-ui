@@ -924,12 +924,33 @@ function Browse() {
                   </div>
                   <div className="card-content">
                     <div className="content">
-                      <div>creator: {creationData[e.id]?.profile?.name}</div>
-                      <div>title: {creationData[e.id]?.metadata?.title}</div>
-                      <div>description: {creationData[e.id]?.metadata?.description}</div>
-                      <div>categories: {creationData[e.id]?.metadata?.categories}</div>
-                      <div>nsfw: {creationData[e.id]?.metadata?.nsfw}</div>
-                      <div>{e.metadataHash}</div>
+                      <div>by: {creationData[e.id]?.profile?.name}</div>
+                      <div className="title is-5">
+                        {creationData[e.id]?.metadata?.title}
+                      </div>
+                      <div className="subtitle is-6">
+                        {creationData[e.id]?.metadata?.description}
+                      </div>
+                      <div className="tags">
+                        {creationData[e.id]?.metadata?.categories.map(
+                          (c: any) => (
+                            <span key={c} className="tag is-primary">
+                              {c}
+                            </span>
+                          )
+                        )}
+                      </div>
+                      <div>
+                        <label className="checkbox subtitle is-6">
+                          <input
+                            type="checkbox"
+                            disabled
+                            checked={creationData[e.id]?.metadata?.nsfw}
+                          />
+                          &nbsp;
+                          <span>NSFW</span>
+                        </label>
+                      </div>
                       <span className="tag is-warning">{e.price} DAI</span>
                     </div>
                   </div>
