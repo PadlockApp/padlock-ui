@@ -16,6 +16,7 @@ import IPFS from 'ipfs-api';
 import axios from 'axios';
 //@ts-ignore
 import * as Box from '3box';
+import { toast } from "bulma-toast";
 import './style.scss';
 
 const { REACT_APP_PINATA_KEY, REACT_APP_PINATA_SECRET } = process.env;
@@ -52,6 +53,14 @@ export const isURL = (str: string) => {
   var url = new RegExp(urlRegex, 'i');
   return str.length < 2083 && url.test(str);
 };
+
+const notify = (msg: string, style = 'is-warning') =>
+  toast({
+    message: msg,
+    type: style as any,
+    dismissible: true,
+    animate: { in: 'fadeIn', out: 'fadeOut' },
+  });
 
 const EthCrypto = require('eth-crypto');
 
@@ -457,6 +466,7 @@ function Review(props: any) {
   const history = useHistory();
   const ffs = useSelector((state: State) => state.ffs);
   const eth = useSelector((state: State) => state.eth);
+  const [isWorking, setIsWorking] = useState(false);
 
   const {
     file,
@@ -492,34 +502,45 @@ function Review(props: any) {
   }
 
   const publish = async () => {
+    try {
+      // TODO: get this from SecretContract on instantiate
+      setIsWorking(true);
+      const publickey =
+        '0x04a8873dd159b2c241dcf56ff4baa59e84cc0124844340d6eec7b7f8fd795a921a7e5fc50298aa728ba9fe4561dd99cb2d52e6267a8e0549ccf34ca767b6593ab8';
 
-    // TODO: get this from SecretContract on instantiate
-    const publickey = '0x04a8873dd159b2c241dcf56ff4baa59e84cc0124844340d6eec7b7f8fd795a921a7e5fc50298aa728ba9fe4561dd99cb2d52e6267a8e0549ccf34ca767b6593ab8';
+      const rawText = await file?.text();
+      const data = await encryptWithPublicKey(publickey, rawText);
+      notify('Encrypted the content using Secret Network!');
 
-    const rawText = await file?.text();
-    const data = await encryptWithPublicKey(publickey, rawText);
+      const { hash } = (
+        await ipfs.files.add(Buffer.from(JSON.stringify(metadata)))
+      )[0];
+      const pin = await pinByHash(hash);
+      console.log(
+        `metadata hash: ${hash}\nmetadata pin: ${JSON.stringify(pin)}`
+      );
+      notify('Pushed content metadata to IPFS!');
 
-    const { hash } = (
-      await ipfs.files.add(Buffer.from(JSON.stringify(metadata)))
-    )[0];
-    const pin = await pinByHash(hash);
-    console.log(`metadata hash: ${hash}\nmetadata pin: ${JSON.stringify(pin)}`);
-
-
-    const buffer = Buffer.from(data);
-    const { cid } = (await ffs?.addToHot(buffer)) as any;
-    await ffs?.pushConfig(cid);
-    ffs?.watchLogs((logEvent) => {
-      console.log(`received event for cid ${logEvent.cid}`);
-      console.log(logEvent);
-    }, cid);
-    const from = (eth?.web3.currentProvider as any).selectedAddress;
-    await eth?.contract.methods
-      .create(cid, hash, Eth.toEthUnits(price))
-      .send({ from });
-    // TODO: add toasts + notify.js
-    // TODO: lock both buttons and push history to Done page after publishing
-    console.log(file, price, JSON.stringify(metadata));
+      const buffer = Buffer.from(data);
+      const { cid } = (await ffs?.addToHot(buffer)) as any;
+      await ffs?.pushConfig(cid);
+      notify('Hosted encrypted content on Powergate!');
+      ffs?.watchLogs((logEvent) => {
+        console.log(`received event for cid ${logEvent.cid}`);
+        console.log(logEvent);
+      }, cid);
+      const from = (eth?.web3.currentProvider as any).selectedAddress;
+      await eth?.contract.methods
+        .create(cid, hash, Eth.toEthUnits(price))
+        .send({ from });
+      notify('Listed encrypted content on Ethereum!');
+      setIsWorking(false);
+      // TODO: lock both buttons and push history to Done page after publishing
+      console.log(file, price, JSON.stringify(metadata));
+    } catch (error) {
+      notify('Error publishing content!', 'is-danger');
+      setIsWorking(false);
+    }
   };
 
   return (
@@ -592,12 +613,14 @@ function Review(props: any) {
           <button
             className="button is-medium is-danger is-rounded"
             onClick={reset}
+            disabled={isWorking}
           >
             Reset Fields
           </button>
           <button
-            className="button is-medium is-primary is-rounded"
+            className={`button is-medium is-primary is-rounded ${isWorking && 'is-loading'}`}
             onClick={publish}
+            disabled={isWorking}
           >
             Padlock It!
           </button>
@@ -616,6 +639,7 @@ function Account() {
   const [file, setFile] = useState<File | null>();
   const [loading, setLoading] = useState(true);
   const [saveIsInvoked, setSaveIsInvoked] = useState(false);
+  const [isWorking, setIsWorking] = useState(false);
 
   const nameIsInvalid = () =>
     (name.length === 0 || !name.match(/^[0-9a-z]+$/)) && saveIsInvoked;
@@ -664,16 +688,26 @@ function Account() {
   const updateAccount = async () => {
     // TODO: check name is not taken
     // TODO: lock button and show toast after info are updated
-    space?.public.set('name', name);
-    space?.public.set('website', website);
-    space?.public.set('about', about);
-    if (file) {
-      const { hash } = (
-        await ipfs.files.add(Buffer.from((await file?.arrayBuffer()) as any))
-      )[0];
-      await space?.public.set('profile-img-hash', hash);
-      const pin = await pinByHash(hash);
-      console.log(pin);
+    try {
+      setIsWorking(true);
+      await space?.public.set('name', name);
+      await space?.public.set('website', website);
+      await space?.public.set('about', about);
+      if (file) {
+        const { hash } = (
+          await ipfs.files.add(Buffer.from((await file?.arrayBuffer()) as any))
+        )[0];
+        await space?.public.set('profile-img-hash', hash);
+        const pin = await pinByHash(hash);
+        console.log(pin);
+      }
+      notify('Profile updated!');
+      setSaveIsInvoked(false);
+      setIsWorking(false);
+    } catch (error) {
+      notify('Error updating profile!', 'is-danger');
+      setSaveIsInvoked(false);
+      setIsWorking(false);
     }
   };
 
@@ -683,7 +717,8 @@ function Account() {
       !websiteIsInvalid() &&
       !aboutIsInvalid() &&
       !fileIsInvalid() &&
-      saveIsInvoked
+      saveIsInvoked &&
+      !isWorking
     ) {
       updateAccount();
     }
@@ -800,9 +835,10 @@ function Account() {
             </div>
             <div className="buttons is-centered">
               <button
-                className="button is-medium is-primary is-rounded"
+                className={`button is-medium is-primary is-rounded ${isWorking && 'is-loading'}`}
                 onClick={save}
                 style={{ marginTop: '82px' }}
+                disabled={isWorking}
               >
                 Save
               </button>
@@ -924,7 +960,7 @@ function Browse() {
                   <div className="card-image">
                     <figure className="image is-16by9">
                       <img
-                        src="https://i.imgur.com/qgYXeJy.png"
+                        src="https://i.imgur.com/CG13BET.png"
                         alt="Placeholder"
                       />
                     </figure>
