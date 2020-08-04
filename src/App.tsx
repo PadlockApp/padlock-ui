@@ -466,6 +466,8 @@ function Review(props: any) {
   const history = useHistory();
   const ffs = useSelector((state: State) => state.ffs);
   const eth = useSelector((state: State) => state.eth);
+  const secretPair = useSelector((state: State) => state.secretPair);
+  const creatorPublicKey = secretPair.publicKey;
   const [isWorking, setIsWorking] = useState(false);
 
   const {
@@ -503,13 +505,10 @@ function Review(props: any) {
 
   const publish = async () => {
     try {
-      // TODO: get this from SecretContract on instantiate
       setIsWorking(true);
-      const publickey =
-        '0x04a8873dd159b2c241dcf56ff4baa59e84cc0124844340d6eec7b7f8fd795a921a7e5fc50298aa728ba9fe4561dd99cb2d52e6267a8e0549ccf34ca767b6593ab8';
 
       const rawText = await file?.text();
-      const data = await encryptWithPublicKey(publickey, rawText);
+      const data = await encryptWithPublicKey(creatorPublicKey, rawText);
       notify('Encrypted the content using Secret Network!');
 
       const { hash } = (
