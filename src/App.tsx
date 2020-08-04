@@ -499,9 +499,12 @@ function Review(props: any) {
     const rawText = await file?.text();
     const data = await encryptWithPublicKey(publickey, rawText);
 
-    // TODO: upload encrypted data
+    const { hash } = (
+      await ipfs.files.add(Buffer.from(JSON.stringify(metadata)))
+    )[0];
+    const pin = await pinByHash(hash);
+    console.log(`metadata hash: ${hash}\nmetadata pin: ${JSON.stringify(pin)}`);
 
-    // TODO: Add metadata to IPFS
 
     const buffer = Buffer.from(data);
     const { cid } = (await ffs?.stage(buffer)) as any;
@@ -511,9 +514,8 @@ function Review(props: any) {
       console.log(logEvent);
     }, cid);
     const from = (eth?.web3.currentProvider as any).selectedAddress;
-    // TODO: add metadata hash to eth call
     await eth?.contract.methods
-      .create(cid, 'TODO_metadata_hash', Eth.toEthUnits(price))
+      .create(cid, hash, Eth.toEthUnits(price))
       .send({ from });
     // TODO: add toasts + notify.js
     // TODO: lock both buttons and push history to Done page after publishing
@@ -814,7 +816,15 @@ function Account() {
 
 function Browse() {
   // const apolloClient = useSelector((state: State) => state.apolloClient);
-  const [creators, setCreators] = useState<any>({});
+  const [creationData, setCreationData] = useState<{
+    profile: { name: string } | null;
+    metadata: {
+      title: string;
+      description: string;
+      categories: string[];
+      nsfw: boolean;
+    } | null;
+  }>({ profile: null, metadata: null });
   const [searchFilter, setSearchFilter] = useState('');
 
   const GET_CREATIONS = gql`
@@ -852,14 +862,26 @@ function Browse() {
   });
 
   useEffect(() => {
-    data?.creations.map((creator: any) => {
-      setCreators((state: any) => ({
+    data?.creations.map(async (creator: any) => {
+      let metadata: {
+        title: string;
+        description: string;
+        categories: string[];
+        nsfw: boolean;
+      };
+      try {
+        const {
+          data,
+        } = await axios.get(
+          `https://gateway.pinata.cloud/ipfs/${creator.metadataHash}`
+        );
+        metadata = data;
+      } catch(e) {};
+      const profile: { name: string } = await getProfile(creator.creator);
+      setCreationData((state: any) => ({
         ...state,
-        [creator.id]: { name: 'Loading..' },
+        [creator.id]: { profile, metadata },
       }));
-      getProfile(creator.creator).then((c: any) => {
-        setCreators((state: any) => ({ ...state, [creator.id]: c }));
-      });
     });
   }, [data]);
 
@@ -889,26 +911,31 @@ function Browse() {
             //     .includes(searchFilter)
             // )
             // TODO: pull metadata from IPFS and display + add buy functionality to each card + display padlock as preview
-            .map((e: any) => (
-              <div key={e.id} className="card">
-                <div className="card-image">
-                  <figure className="image is-4by3">
-                    <img
-                      src="https://bulma.io/images/placeholders/1280x960.png"
-                      alt="Placeholder"
-                    />
-                  </figure>
-                </div>
-                <div className="card-content">
-                  <div className="content">
-                    <div>creator: {creators[e.id]?.name}</div>
-                    {/* <div>CID hash: {e.hash}</div> */}
-                    <div>{e.metadataHash}</div>
-                    <span className="tag is-warning">{e.price} DAI</span>
+            .map((e: any) => {
+              return (
+                <div key={e.id} className="card">
+                  <div className="card-image">
+                    <figure className="image is-4by3">
+                      <img
+                        src="https://i.imgur.com/qgYXeJy.png"
+                        alt="Placeholder"
+                      />
+                    </figure>
+                  </div>
+                  <div className="card-content">
+                    <div className="content">
+                      <div>creator: {creationData[e.id]?.profile?.name}</div>
+                      <div>title: {creationData[e.id]?.metadata?.title}</div>
+                      <div>description: {creationData[e.id]?.metadata?.description}</div>
+                      <div>categories: {creationData[e.id]?.metadata?.categories}</div>
+                      <div>nsfw: {creationData[e.id]?.metadata?.nsfw}</div>
+                      <div>{e.metadataHash}</div>
+                      <span className="tag is-warning">{e.price} DAI</span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
         </div>
       </section>
     </div>
