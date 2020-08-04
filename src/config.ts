@@ -1,6 +1,6 @@
 export interface AppConfig {
   readonly httpUrl: string;
-  readonly faucetUrl?: string;
+  readonly faucetUrl: string;
   // codeId is the wasm codeId for the service contract on the given chain
   readonly codeId: number;
   readonly fees: {};
