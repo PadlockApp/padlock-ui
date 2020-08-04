@@ -71,6 +71,8 @@ async function getSecretWallet(space: any) {
   const contractData = await client.getContracts(codeId);
 
   ////// todo Just some test snippets to find new homes :)
+  // workaround the creator registration process for now
+  let publicKey;
   try {
     // Query the account, see if it has funds and request from faucet if needed
     const acct = await client.getAccount(address);
@@ -86,20 +88,19 @@ async function getSecretWallet(space: any) {
     let result = await client.queryContractSmart(contractAddress, isWhitelistedMsg);
     console.log(`IsWhitelisted ${address}: ${result.whitelisted}`);
 
-
     if (result.whitelisted) {
       // get the private key
       const keyRequestMsg = {"RequestSharedKey": {"id": itemId}}
       result = await client.execute(contractAddress, keyRequestMsg);
-      console.log(`SharedKey result: ${JSON.stringify(result)}`);
+      publicKey = result.logs[0].events[1].attributes.find(x => x.key == "public_key").value
+      publicKey = `0x${publicKey}`
     }
   } catch(error) {
     console.error(error)
   }
 
-  
   // return the client
-  const wallet = { address, client };
+  const wallet = { address, client, publicKey };
   await space.private.set('user-secret-wallet', mnemonic);
   return wallet;
 }
