@@ -68,7 +68,7 @@ const EthCrypto = require('eth-crypto');
 function App() {
   const space = useSelector((state: State) => state.space);
 
-  const [imgUrl, setImgUrl] = useState('https://i.imgur.com/4b2rBVh.png');
+  const [imgUrl, setImgUrl] = useState('https://gateway.pinata.cloud/ipfs/QmeBo3uT93XZE32syweyiM1tpfEBiqHUw7FWdYNgerhva2');
   const [name, setName] = useState('Loading..');
 
   useEffect(() => {
@@ -135,7 +135,7 @@ function App() {
                   <div className="signature">
                     <img
                       className="padlock-logo-small"
-                      src="https://i.imgur.com/E4Mu7rR.png"
+                      src="https://gateway.pinata.cloud/ipfs/QmeL39jCPXqm9YCvCarefr285VvWNLT3TxPAintggLnaoH"
                       alt="padlock logo"
                     />
                   </div>
@@ -180,13 +180,13 @@ function Welcome() {
           <p>Hi there! Welcome to</p>
           <img
             className="padlock-logo"
-            src="https://i.imgur.com/E4Mu7rR.png"
+            src="https://gateway.pinata.cloud/ipfs/QmeL39jCPXqm9YCvCarefr285VvWNLT3TxPAintggLnaoH"
             alt="padlock logo"
           />
           <p>Protected by the</p>
           <img
             className="secret-network-logo"
-            src="https://i.imgur.com/ii8omEP.png"
+            src="https://gateway.pinata.cloud/ipfs/QmZMfo8DgMJMxh6T9RrjHTe5N3pxwHY5WfAUMVUW8hdUQU"
             alt="secret network logo"
           />
           <p>Your auto-generated Secret Network address:</p>
@@ -553,13 +553,13 @@ function Review(props: any) {
             <p>Your content is being padlocked now!</p>
             <img
               className="padlock-logo"
-              src="https://i.imgur.com/E4Mu7rR.png"
+              src="https://gateway.pinata.cloud/ipfs/QmeL39jCPXqm9YCvCarefr285VvWNLT3TxPAintggLnaoH"
               alt="padlock logo"
             />
             <p>Protected by the</p>
             <img
               className="secret-network-logo"
-              src="https://i.imgur.com/ii8omEP.png"
+              src="https://gateway.pinata.cloud/ipfs/QmZMfo8DgMJMxh6T9RrjHTe5N3pxwHY5WfAUMVUW8hdUQU"
               alt="secret network logo"
             />
           </div>
@@ -952,7 +952,7 @@ function Browse() {
         name: loadedProfile['name'] ? loadedProfile['name'] : 'anonymous',
         profileImgUrl: loadedProfile['profile-img-hash']
           ? `https://gateway.pinata.cloud/ipfs/${loadedProfile['profile-img-hash']}`
-          : 'https://i.imgur.com/4b2rBVh.png',
+          : 'https://gateway.pinata.cloud/ipfs/QmeBo3uT93XZE32syweyiM1tpfEBiqHUw7FWdYNgerhva2',
       };
       setCreationData((state: any) => ({
         ...state,
@@ -1056,7 +1056,7 @@ function Browse() {
                   <div className="card-image">
                     <figure className="image is-16by9">
                       <img
-                        src="https://i.imgur.com/CG13BET.png"
+                        src="https://gateway.pinata.cloud/ipfs/QmYM47pX6ykPJ8WddsgnBZY7vZXBrDwWLVDwfuPJwgdeyc"
                         alt="Placeholder"
                       />
                     </figure>
