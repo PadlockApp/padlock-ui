@@ -87,6 +87,7 @@ export interface EthConnected {
   type: typeof ETH_CONNECTED;
   web3: Web3;
   contract: Contract;
+  nftContract: Contract;
 }
 
 // SpaceConnected type

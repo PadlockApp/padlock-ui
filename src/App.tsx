@@ -466,9 +466,8 @@ function Review(props: any) {
   const history = useHistory();
   const ffs = useSelector((state: State) => state.ffs);
   const eth = useSelector((state: State) => state.eth);
-  const secretPair = useSelector((state: State) => state.secretPair);
-  const creatorPublicKey = secretPair.publicKey;
   const [isWorking, setIsWorking] = useState(false);
+  const secretPair = useSelector((state: State) => state.secretPair);
 
   const {
     file,
@@ -506,9 +505,9 @@ function Review(props: any) {
   const publish = async () => {
     try {
       setIsWorking(true);
-
+      
       const rawText = await file?.text();
-      const data = await encryptWithPublicKey(creatorPublicKey, rawText);
+      const data = await encryptWithPublicKey(secretPair.publicKey, rawText);
       notify('Encrypted the content using Secret Network!');
 
       const { hash } = (
@@ -861,6 +860,7 @@ function Browse() {
     } | null;
   }>({ profile: null, metadata: null });
   const [searchFilter, setSearchFilter] = useState('');
+  const eth = useSelector((state: State) => state.eth);
 
   const GET_CREATIONS = gql`
     query {
@@ -893,8 +893,53 @@ function Browse() {
   };
 
   const { data } = useQuery(GET_CREATIONS, {
-    pollInterval: 500,
+    pollInterval: 5000,
   });
+
+  //todo just some dummy data, replace with real orders from subgraph
+  const buyerOrders = {
+    "creations": [
+      {
+        "creator": "0xc783df8a850f42e7f7e57013759c285caa701eb6",
+        "hash": "test",
+        "id": "0x1",
+        "metadataHash": "test"
+      }
+    ],
+    "orders": [
+      {
+        "id": "0x1",
+        "recipient": "secret10edttuhptpkadqty7a9rehvv93vsmg0m8j43qq"
+      },
+      {
+        "id": "0x3",
+        "recipient": "secret10edttuhptpkadqty7a9rehvv93vsmg0m8j43qq"
+      },
+      {
+        "id": "0x4",
+        "recipient": "secret10edttuhptpkadqty7a9rehvv93vsmg0m8j43qq"
+      },
+      {
+        "id": "0x5",
+        "recipient": "secret10edttuhptpkadqty7a9rehvv93vsmg0m8j43qq"
+      },
+      {
+        "id": "0x6",
+        "recipient": "secret10edttuhptpkadqty7a9rehvv93vsmg0m8j43qq"
+      }
+    ]
+  }
+
+  const isOwned = async (creationId: any) => {
+    let owned: boolean = false;
+    // todo WIP
+    // if (eth) {
+    //   const buyer = eth?.web3.currentProvider.selectedAddress;
+    //   const owner = await eth?.nftContract.methods.ownerOf(creationId).call();
+    //   owned = owner === buyer;
+    // }
+    return owned;
+  };
 
   useEffect(() => {
     data?.creations.map(async (creator: any) => {
@@ -999,9 +1044,14 @@ function Browse() {
                       </div>
 
                       <span className="tag is-medium is-warning subtitle">{e.price} DAI</span>
-                      <button className="button is-fullwidth is-primary is-rounded">
-                        Purchase
+                      { isOwned(e.id) ? 
+                        <button className="button is-fullwidth is-primary is-rounded">
+                          Purchase
+                        </button> :
+                        <button className="button is-fullwidth is-primary is-rounded">
+                          Open/Decrypt/etc
                       </button>
+                      }
                     </div>
                   </div>
                 </div>
