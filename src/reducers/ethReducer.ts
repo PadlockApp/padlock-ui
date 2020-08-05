@@ -4,8 +4,8 @@ import { EthState } from './types';
 const ethReducer = (state: EthState = null, action: EthConnected) => {
   switch (action.type) {
     case ETH_CONNECTED:
-      const { web3, contract } = action;
-      return { web3, contract };
+      const { web3, contract, paymentContract } = action;
+      return { web3, contract, paymentContract };
     default:
       return state;
   }

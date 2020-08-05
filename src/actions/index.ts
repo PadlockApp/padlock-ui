@@ -15,10 +15,11 @@ import {
   EthConnected,
 } from './types';
 
-export const ethConnected = (web3: Web3, contract: Contract): EthConnected => ({
+export const ethConnected = (web3: Web3, contract: Contract, paymentContract: Contract): EthConnected => ({
   type: ETH_CONNECTED,
   web3,
   contract,
+  paymentContract,
 });
 
 export const spaceConnected = (space: any): SpaceConnected => ({

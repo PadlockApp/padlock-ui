@@ -852,6 +852,7 @@ function Account() {
 function Browse() {
   // const apolloClient = useSelector((state: State) => state.apolloClient);
   const eth = useSelector((state: State) => state.eth);
+  const secretPair = useSelector((state: State) => state.secretPair);
   const [creationData, setCreationData] = useState<{
     profile: { name: string } | null;
     metadata: {
@@ -925,9 +926,20 @@ function Browse() {
     });
   }, [data]);
 
-  const purchase = async (contentId: string) => {};
+  const purchase = async (contentId: string, amount: number) => {
+    try {
+      const from = (eth?.web3.currentProvider as any).selectedAddress;
+      const padlockContractAddress = eth?.contract.options.address;
+      await eth?.paymentContract.methods.approve(padlockContractAddress, Eth.toEthUnits(amount)).send({ from });;
+      await eth?.contract.methods.order(Number(contentId), secretPair?.address).send({ from });
+      notify('Content purchased!');
+    } catch (error) {
+      notify('Error purchasing content!', 'is-danger');
+    }
+  };
 
-  const download = async (contentId: string) => {};
+  const download = async (contentId: string) => {
+  };
 
   return (
     <div>
@@ -1022,11 +1034,12 @@ function Browse() {
                           Download
                         </button>
                       ) : (
+                        // TODO: solve BN issue for fake DAI
                         <button
-                          onClick={() => purchase(e.id)}
+                          onClick={() => purchase(e.id, e.price)}
                           className="button is-fullwidth is-primary is-rounded"
                         >
-                          Purchase
+                          Buy
                         </button>
                       )}
                     </div>

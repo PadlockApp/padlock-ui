@@ -13,6 +13,7 @@ import * as Box from '3box';
 import Web3 from 'web3';
 import { AbiItem } from 'web3-utils';
 import abi from './abis/Contract.json';
+import erc20Abi from './abis/PadlockERC20.json';
 import { config } from "./config";
 import ky from "ky";
 const { EnigmaUtils, Secp256k1Pen, SigningCosmWasmClient, pubkeyToAddress, encodeSecp256k1Pubkey } = require("secretjs");
@@ -118,7 +119,11 @@ function* init() {
     abi as AbiItem[],
     '0x8D1eD3DaB2dE4622b7eD38baB4A9918256CF7B30'
   );
-  yield put(ethConnected(web3, contract));
+  const paymentContract = new web3.eth.Contract(
+    erc20Abi as AbiItem[],
+    '0x3C94E8C155C83943391B0C79D1e43c5Bd4DC63BE'
+  );
+  yield put(ethConnected(web3, contract, paymentContract));
 
   // 3box
   const box = yield Box.create(web3.currentProvider);

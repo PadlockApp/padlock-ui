@@ -1,6 +1,6 @@
 import { Ffs, Web3, Contract } from '../actions/types';
 
-export type EthState = { web3: Web3; contract: Contract } | null;
+export type EthState = { web3: Web3; contract: Contract; paymentContract: Contract } | null;
 export type SpaceState = any | null;
 export type SecretState = any | null;
 export type FfsState = Ffs | null;
