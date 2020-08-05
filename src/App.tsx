@@ -16,8 +16,9 @@ import IPFS from 'ipfs-api';
 import axios from 'axios';
 //@ts-ignore
 import * as Box from '3box';
-import { toast } from "bulma-toast";
+import { toast } from 'bulma-toast';
 import './style.scss';
+import { ffsOptions } from '@textile/powergate-client';
 
 const { REACT_APP_PINATA_KEY, REACT_APP_PINATA_SECRET } = process.env;
 
@@ -39,10 +40,10 @@ export const pinByHash = (hashToPin: string) => {
         pinata_secret_api_key: REACT_APP_PINATA_SECRET,
       },
     })
-    .then(function (response) {
+    .then(function(response) {
       return response;
     })
-    .catch(function (error) {
+    .catch(function(error) {
       return error;
     });
 };
@@ -192,9 +193,8 @@ function Welcome() {
             <div className="column is-half">
               <div className="field">
                 <div
-                  className={`control has-icons-right  ${
-                    !secretPair && 'is-loading'
-                  }`}
+                  className={`control has-icons-right  ${!secretPair &&
+                    'is-loading'}`}
                 >
                   <input
                     className={'input  is-medium'}
@@ -467,7 +467,7 @@ function Review(props: any) {
   const ffs = useSelector((state: State) => state.ffs);
   const eth = useSelector((state: State) => state.eth);
   const secretPair = useSelector((state: State) => state.secretPair);
-  const creatorPublicKey = secretPair.publicKey;
+  const creatorPublicKey = secretPair?.publicKey;
   const [isWorking, setIsWorking] = useState(false);
 
   const {
@@ -490,23 +490,22 @@ function Review(props: any) {
   };
 
   /**
-  * @method encryptWithPublicKey
-  * @param {String} pubKey - Compressed 33byte public key starting with 0x03 or 0x02
-  * @param {Object} message - message object to encrypt
-  */
+   * @method encryptWithPublicKey
+   * @param {String} pubKey - Compressed 33byte public key starting with 0x03 or 0x02
+   * @param {Object} message - message object to encrypt
+   */
   async function encryptWithPublicKey(pubKey, message) {
-      pubKey = pubKey.substring(2)
-      const encryptedObject = await EthCrypto.encryptWithPublicKey(
-          pubKey,
-          JSON.stringify(message)
-      );
-      return EthCrypto.cipher.stringify(encryptedObject);
+    pubKey = pubKey.substring(2);
+    const encryptedObject = await EthCrypto.encryptWithPublicKey(
+      pubKey,
+      JSON.stringify(message)
+    );
+    return EthCrypto.cipher.stringify(encryptedObject);
   }
 
   const publish = async () => {
     try {
       setIsWorking(true);
-
       const rawText = await file?.text();
       const data = await encryptWithPublicKey(creatorPublicKey, rawText);
       notify('Encrypted the content using Secret Network!');
@@ -522,7 +521,7 @@ function Review(props: any) {
 
       const buffer = Buffer.from(data);
       const { cid } = (await ffs?.addToHot(buffer)) as any;
-      await ffs?.pushConfig(cid);
+      await ffs?.pushConfig(cid, ffsOptions.withOverrideConfig(true));
       notify('Hosted encrypted content on Powergate!');
       ffs?.watchLogs((logEvent) => {
         console.log(`received event for cid ${logEvent.cid}`);
@@ -533,9 +532,7 @@ function Review(props: any) {
         .create(cid, hash, Eth.toEthUnits(price))
         .send({ from });
       notify('Listed encrypted content on Ethereum!');
-      setIsWorking(false);
-      // TODO: lock both buttons and push history to Done page after publishing
-      console.log(file, price, JSON.stringify(metadata));
+      history.push('');
     } catch (error) {
       notify('Error publishing content!', 'is-danger');
       setIsWorking(false);
@@ -544,87 +541,112 @@ function Review(props: any) {
 
   return (
     <div>
-      <section className="section">
-        <h1 className="title" style={{ marginTop: '20px' }}>
-          Review
-        </h1>
-        <h1 className="subtitle" style={{ marginBottom: '75px' }}>
-          Review the information for your content piece
-        </h1>
-        <div className="columns is-fullheight is-centered">
-          <div className="column">
-            <div className="columns is-centered">
-              <div className="column is-three-fifths">
-                <div className="field">
-                  <label className="label">Title</label>
-                  <div className="content">{metadata?.title}</div>
+      {isWorking ? (
+        <section className="section">
+          <div
+            className="content is-medium"
+            style={{ textAlign: 'center', marginTop: '180px' }}
+          >
+            <p>Your content is being padlocked now!</p>
+            <img
+              className="padlock-logo"
+              src="https://i.imgur.com/E4Mu7rR.png"
+              alt="padlock logo"
+            />
+            <p>Protected by the</p>
+            <img
+              className="secret-network-logo"
+              src="https://i.imgur.com/ii8omEP.png"
+              alt="secret network logo"
+            />
+          </div>
+        </section>
+      ) : (
+        <section className="section">
+          <h1 className="title" style={{ marginTop: '20px' }}>
+            Review
+          </h1>
+          <h1 className="subtitle" style={{ marginBottom: '75px' }}>
+            Review the information for your content piece
+          </h1>
+          <div className="columns is-fullheight is-centered">
+            <div className="column">
+              <div className="columns is-centered">
+                <div className="column is-three-fifths">
+                  <div className="field">
+                    <label className="label">Title</label>
+                    <div className="content">{metadata?.title}</div>
+                  </div>
+                </div>
+                <div className="column">
+                  <label className="label">Price</label>
+                  <div className="content">{price} DAI</div>
                 </div>
               </div>
-              <div className="column">
-                <label className="label">Price</label>
-                <div className="content">{price} DAI</div>
+              <div className="field">
+                <label className="label">Description</label>
+                <div className="content">{metadata?.description}</div>
+              </div>
+              <div className="field">
+                <label className="label">Categories</label>
+                <div className={`control has-icons-right`}>
+                  <div className="tags">
+                    {metadata?.categories.map((c: any) => (
+                      <span key={c} className="tag is-primary">
+                        {c}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+              <div className="field">
+                <div className="control">
+                  <label className="checkbox">
+                    <input type="checkbox" disabled checked={metadata?.nsfw} />
+                    &nbsp; &nbsp;
+                    <span>Contains NSFW material</span>
+                  </label>
+                </div>
               </div>
             </div>
-            <div className="field">
-              <label className="label">Description</label>
-              <div className="content">{metadata?.description}</div>
-            </div>
-            <div className="field">
-              <label className="label">Categories</label>
-              <div className={`control has-icons-right`}>
-                <div className="tags">
-                  {metadata?.categories.map((c: any) => (
-                    <span key={c} className="tag is-primary">
-                      {c}
+            <div className="column">
+              <div className="field" style={{ marginTop: '32px' }}>
+                <div className="file is-medium is-boxed is-centered has-name">
+                  <label className="file-label">
+                    <input className="file-input" type="file" disabled />
+                    <span className="file-cta">
+                      <span className="file-icon">
+                        <i className="fas fa-upload"></i>
+                      </span>
+                      <span className="file-label">Content File</span>
                     </span>
-                  ))}
+                    <span className="file-name">
+                      {file?.name && file?.name}
+                    </span>
+                  </label>
                 </div>
-              </div>
-            </div>
-            <div className="field">
-              <div className="control">
-                <label className="checkbox">
-                  <input type="checkbox" disabled checked={metadata?.nsfw} />
-                  &nbsp; &nbsp;
-                  <span>Contains NSFW material</span>
-                </label>
               </div>
             </div>
           </div>
-          <div className="column">
-            <div className="field" style={{ marginTop: '32px' }}>
-              <div className="file is-medium is-boxed is-centered has-name">
-                <label className="file-label">
-                  <input className="file-input" type="file" disabled />
-                  <span className="file-cta">
-                    <span className="file-icon">
-                      <i className="fas fa-upload"></i>
-                    </span>
-                    <span className="file-label">Content File</span>
-                  </span>
-                  <span className="file-name">{file?.name && file?.name}</span>
-                </label>
-              </div>
-            </div>
+          <div className="buttons is-centered" style={{ marginTop: '82px' }}>
+            <button
+              className="button is-medium is-danger is-rounded"
+              onClick={reset}
+              disabled={isWorking}
+            >
+              Reset Fields
+            </button>
+            <button
+              className={`button is-medium is-primary is-rounded ${isWorking &&
+                'is-loading'}`}
+              onClick={publish}
+              disabled={isWorking}
+            >
+              Padlock It!
+            </button>
           </div>
-        </div>
-        <div className="buttons is-centered" style={{ marginTop: '82px' }}>
-          <button
-            className="button is-medium is-danger is-rounded"
-            onClick={reset}
-            disabled={isWorking}
-          >
-            Reset Fields
-          </button>
-          <button
-            className={`button is-medium is-primary is-rounded ${isWorking && 'is-loading'}`}
-            onClick={publish}
-            disabled={isWorking}
-          >
-            Padlock It!
-          </button>
-        </div>
-      </section>
+        </section>
+      )}
     </div>
   );
 }
@@ -686,7 +708,6 @@ function Account() {
 
   const updateAccount = async () => {
     // TODO: check name is not taken
-    // TODO: lock button and show toast after info are updated
     try {
       setIsWorking(true);
       await space?.public.set('name', name);
@@ -834,7 +855,8 @@ function Account() {
             </div>
             <div className="buttons is-centered">
               <button
-                className={`button is-medium is-primary is-rounded ${isWorking && 'is-loading'}`}
+                className={`button is-medium is-primary is-rounded ${isWorking &&
+                  'is-loading'}`}
                 onClick={save}
                 style={{ marginTop: '82px' }}
                 disabled={isWorking}
@@ -932,8 +954,12 @@ function Browse() {
     try {
       const from = (eth?.web3.currentProvider as any).selectedAddress;
       const padlockContractAddress = eth?.contract.options.address;
-      await eth?.paymentContract.methods.approve(padlockContractAddress, Eth.toEthUnits(amount)).send({ from });;
-      await eth?.contract.methods.order(Number(contentId), secretPair?.address).send({ from });
+      await eth?.paymentContract.methods
+        .approve(padlockContractAddress, Eth.toEthUnits(amount))
+        .send({ from });
+      await eth?.contract.methods
+        .order(Number(contentId), secretPair?.address)
+        .send({ from });
       notify('Content purchased!');
     } catch (error) {
       notify('Error purchasing content!', 'is-danger');
@@ -977,7 +1003,6 @@ function Browse() {
                   ?.toLowerCase()
                   .includes(searchFilter.toLowerCase())
             )
-            // TODO: add buy functionality to each card
             .map((e: any) => {
               return (
                 <div key={e.id} className="card">
@@ -1001,6 +1026,11 @@ function Browse() {
                             />
                             &nbsp;
                             <span>NSFW</span>
+                          </label>
+                        </div>
+                        <div>
+                          <label className="subtitle is-6">
+                            <span>Sales: {e.orders.length}</span>
                           </label>
                         </div>
                         <div className="tags">
@@ -1038,7 +1068,6 @@ function Browse() {
                           Download
                         </button>
                       ) : (
-                        // TODO: solve BN issue for fake DAI
                         <button
                           onClick={() => purchase(e.id, e.price)}
                           className="button is-fullwidth is-primary is-rounded"

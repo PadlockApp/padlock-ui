@@ -14,9 +14,15 @@ import Web3 from 'web3';
 import { AbiItem } from 'web3-utils';
 import abi from './abis/Contract.json';
 import erc20Abi from './abis/PadlockERC20.json';
-import { config } from "./config";
-import ky from "ky";
-const { EnigmaUtils, Secp256k1Pen, SigningCosmWasmClient, pubkeyToAddress, encodeSecp256k1Pubkey } = require("secretjs");
+import { config } from './config';
+import ky from 'ky';
+const {
+  EnigmaUtils,
+  Secp256k1Pen,
+  SigningCosmWasmClient,
+  pubkeyToAddress,
+  encodeSecp256k1Pubkey,
+} = require('secretjs');
 
 const getWeb3 = () =>
   new Promise((resolve, reject) => {
@@ -43,10 +49,7 @@ const getWeb3 = () =>
     }
   });
 
-const {
-  REACT_APP_POW_HOST,
-  REACT_APP_POW_TOKEN,
-} = process.env;
+const { REACT_APP_POW_HOST, REACT_APP_POW_TOKEN } = process.env;
 
 async function getSecretWallet(space: any) {
   const cachedWallet = await space.private.get('user-secret-wallet');
@@ -60,13 +63,14 @@ async function getSecretWallet(space: any) {
   const pubkey = encodeSecp256k1Pubkey(signingPen.pubkey);
   const address = pubkeyToAddress(pubkey, 'secret');
   const txEncryptionSeed = EnigmaUtils.GenerateNewSeed();
-  
+
   const client = new SigningCosmWasmClient(
-        config.httpUrl,
-        address,
-        (signBytes) => signingPen.sign(signBytes),
-        txEncryptionSeed, config.fees
-    );
+    config.httpUrl,
+    address,
+    (signBytes) => signingPen.sign(signBytes),
+    txEncryptionSeed,
+    config.fees
+  );
 
   const codeId = 1;
   const contractData = await client.getContracts(codeId);
@@ -77,27 +81,34 @@ async function getSecretWallet(space: any) {
   try {
     // Query the account, see if it has funds and request from faucet if needed
     const acct = await client.getAccount(address);
-    console.log(`Secret account=${JSON.stringify(acct)}`)
+    console.log(`Secret account=${JSON.stringify(acct)}`);
     if (!acct?.balance?.length) {
-      await ky.post(config.faucetUrl, { json: { ticker: "SCRT", address } });
+      await ky.post(config.faucetUrl, { json: { ticker: 'SCRT', address } });
     }
 
     // query the contract
     const itemId = 1;
     const contractAddress = contractData[0].address;
-    const isWhitelistedMsg = {"IsWhitelisted": {"address": address, "id": itemId}}
-    let result = await client.queryContractSmart(contractAddress, isWhitelistedMsg);
+    const isWhitelistedMsg = {
+      IsWhitelisted: { address: address, id: itemId },
+    };
+    let result = await client.queryContractSmart(
+      contractAddress,
+      isWhitelistedMsg
+    );
     console.log(`IsWhitelisted ${address}: ${result.whitelisted}`);
 
     if (result.whitelisted) {
       // get the private key
-      const keyRequestMsg = {"RequestSharedKey": {"id": itemId}}
+      const keyRequestMsg = { RequestSharedKey: { id: itemId } };
       result = await client.execute(contractAddress, keyRequestMsg);
-      publicKey = result.logs[0].events[1].attributes.find(x => x.key === "public_key").value
-      publicKey = `0x${publicKey}`
+      publicKey = result.logs[0].events[1].attributes.find(
+        (x) => x.key === 'public_key'
+      ).value;
+      publicKey = `0x${publicKey}`;
     }
-  } catch(error) {
-    console.error(error)
+  } catch (error) {
+    console.error(error);
   }
 
   // return the client
