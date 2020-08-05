@@ -851,6 +851,7 @@ function Account() {
 
 function Browse() {
   // const apolloClient = useSelector((state: State) => state.apolloClient);
+  const eth = useSelector((state: State) => state.eth);
   const [creationData, setCreationData] = useState<{
     profile: { name: string } | null;
     metadata: {
@@ -870,6 +871,10 @@ function Browse() {
         hash
         metadataHash
         price
+        orders {
+          buyer
+          recipient
+        }
       }
     }
   `;
@@ -882,9 +887,11 @@ function Browse() {
   */
   async function decryptWithPrivateKey(privateKey: string, encrypted: string) {
     const encryptedObject = EthCrypto.cipher.parse(encrypted);
-      const decryptedString = await EthCrypto.decryptWithPrivateKey(
-        privateKey, encryptedObject);
-      console.log(`decrypted=${decryptedString}`)
+    const decryptedString = await EthCrypto.decryptWithPrivateKey(
+      privateKey,
+      encryptedObject
+    );
+    console.log(`decrypted=${decryptedString}`);
   }
 
   const getProfile = async (address: string) => {
@@ -897,7 +904,7 @@ function Browse() {
   });
 
   useEffect(() => {
-    data?.creations.map(async (creator: any) => {
+    data?.creations.map(async (creation: any) => {
       let metadata: {
         title: string;
         description: string;
@@ -905,20 +912,22 @@ function Browse() {
         nsfw: boolean;
       };
       try {
-        const {
-          data,
-        } = await axios.get(
-          `https://gateway.pinata.cloud/ipfs/${creator.metadataHash}`
+        const { data } = await axios.get(
+          `https://gateway.pinata.cloud/ipfs/${creation.metadataHash}`
         );
         metadata = data;
-      } catch(e) {};
-      const profile: { name: string } = await getProfile(creator.creator);
+      } catch (e) {}
+      const profile: { name: string } = await getProfile(creation.creator);
       setCreationData((state: any) => ({
         ...state,
-        [creator.id]: { profile, metadata },
+        [creation.id]: { profile, metadata },
       }));
     });
   }, [data]);
+
+  const purchase = async (contentId: string) => {};
+
+  const download = async (contentId: string) => {};
 
   return (
     <div>
@@ -998,10 +1007,28 @@ function Browse() {
                         {creationData[e.id]?.metadata?.description}
                       </div>
 
-                      <span className="tag is-medium is-warning subtitle">{e.price} DAI</span>
-                      <button className="button is-fullwidth is-primary is-rounded">
-                        Purchase
-                      </button>
+                      <span className="tag is-medium is-warning subtitle">
+                        {e.price} DAI
+                      </span>
+                      {e.orders.some(
+                        (order) =>
+                          order.buyer ===
+                          (eth?.web3.currentProvider as any).selectedAddress
+                      ) ? (
+                        <button
+                          onClick={() => download(e.id)}
+                          className="button is-fullwidth is-primary is-rounded"
+                        >
+                          Download
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => purchase(e.id)}
+                          className="button is-fullwidth is-primary is-rounded"
+                        >
+                          Purchase
+                        </button>
+                      )}
                     </div>
                   </div>
                 </div>

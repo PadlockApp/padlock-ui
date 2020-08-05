@@ -92,7 +92,7 @@ async function getSecretWallet(space: any) {
       // get the private key
       const keyRequestMsg = {"RequestSharedKey": {"id": itemId}}
       result = await client.execute(contractAddress, keyRequestMsg);
-      publicKey = result.logs[0].events[1].attributes.find(x => x.key == "public_key").value
+      publicKey = result.logs[0].events[1].attributes.find(x => x.key === "public_key").value
       publicKey = `0x${publicKey}`
     }
   } catch(error) {
