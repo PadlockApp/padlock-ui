@@ -12,9 +12,10 @@ import { Bip39, Random } from '@iov/crypto';
 import * as Box from '3box';
 import Web3 from 'web3';
 import { AbiItem } from 'web3-utils';
-import abi from './abis/Contract.json';
 import { config } from "./config";
 import ky from "ky";
+const PadlockAbi = require('./abis/PadlockContract.json');
+const PadlockNftAbi = require('./abis/PadlockNftContract.json');
 const { EnigmaUtils, Secp256k1Pen, SigningCosmWasmClient, pubkeyToAddress, encodeSecp256k1Pubkey } = require("secretjs");
 
 const getWeb3 = () =>
@@ -114,11 +115,16 @@ function* init() {
 
   // web3 client
   const web3 = (yield getWeb3()) as Web3;
-  const contract = new web3.eth.Contract(
-    abi as AbiItem[],
+  const padlockContract = new web3.eth.Contract(
+    PadlockAbi as AbiItem[],
     '0x8D1eD3DaB2dE4622b7eD38baB4A9918256CF7B30'
   );
-  yield put(ethConnected(web3, contract));
+
+  const nftContract = new web3.eth.Contract(
+    PadlockNftAbi as AbiItem[],
+    '0x82903d9F4fd393D6E47273ADB2a11a2ccaE03392'
+  );
+  yield put(ethConnected(web3, padlockContract, nftContract));
 
   // 3box
   const box = yield Box.create(web3.currentProvider);
