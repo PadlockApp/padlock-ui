@@ -853,6 +853,8 @@ function Browse() {
   // const apolloClient = useSelector((state: State) => state.apolloClient);
   const eth = useSelector((state: State) => state.eth);
   const secretPair = useSelector((state: State) => state.secretPair);
+  const ffs = useSelector((state: State) => state.ffs);
+
   const [creationData, setCreationData] = useState<{
     profile: { name: string } | null;
     metadata: {
@@ -938,7 +940,9 @@ function Browse() {
     }
   };
 
-  const download = async (contentId: string) => {
+  const download = async (contentId: string, contentHash: string) => {
+    const blob = await ffs?.get(contentHash);
+    // TODO: convert to file, decrypt, and download
   };
 
   return (
@@ -1028,7 +1032,7 @@ function Browse() {
                           (eth?.web3.currentProvider as any).selectedAddress
                       ) ? (
                         <button
-                          onClick={() => download(e.id)}
+                          onClick={() => download(e.id, e.hash)}
                           className="button is-fullwidth is-primary is-rounded"
                         >
                           Download
