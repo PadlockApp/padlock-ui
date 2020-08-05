@@ -77,7 +77,7 @@ async function getSecretWallet(space: any) {
 
   ////// todo Just some test snippets to find new homes :)
   // workaround the creator registration process for now
-  let publicKey;
+  let publicKey, privateKey;
   try {
     // Query the account, see if it has funds and request from faucet if needed
     const acct = await client.getAccount(address);
@@ -105,14 +105,18 @@ async function getSecretWallet(space: any) {
       publicKey = result.logs[0].events[1].attributes.find(
         (x) => x.key === 'public_key'
       ).value;
+      privateKey = result.logs[0].events[1].attributes.find(
+        (x) => x.key === 'private_key'
+      ).value;
       publicKey = `0x${publicKey}`;
+      privateKey = `0x${privateKey}`;
     }
   } catch (error) {
     console.error(error);
   }
 
   // return the client
-  const wallet = { address, client, publicKey };
+  const wallet = { address, client, publicKey, privateKey };
   await space.private.set('user-secret-wallet', mnemonic);
   return wallet;
 }

@@ -877,6 +877,7 @@ function Browse() {
   // const apolloClient = useSelector((state: State) => state.apolloClient);
   const eth = useSelector((state: State) => state.eth);
   const secretPair = useSelector((state: State) => state.secretPair);
+  const creatorPrivateKey = secretPair?.privateKey;
   const ffs = useSelector((state: State) => state.ffs);
 
   const [creationData, setCreationData] = useState<{
@@ -914,11 +915,11 @@ function Browse() {
   */
   async function decryptWithPrivateKey(privateKey: string, encrypted: string) {
     const encryptedObject = EthCrypto.cipher.parse(encrypted);
-    const decryptedString = await EthCrypto.decryptWithPrivateKey(
+    const decryptedString: string = await EthCrypto.decryptWithPrivateKey(
       privateKey,
       encryptedObject
     );
-    console.log(`decrypted=${decryptedString}`);
+    return decryptedString;
   }
 
   const getProfile = async (address: string) => {
@@ -991,8 +992,15 @@ function Browse() {
 
   const download = async (contentId: string, contentHash: string) => {
     debugger;
-    const blob = await ffs?.get(contentHash);
-    // TODO: convert to file, decrypt, and download
+    const byte = await ffs?.get(contentHash);
+    const encryptedBlob = new Blob([byte as Uint8Array]);
+    const encryptedBlobText = await encryptedBlob.text();
+    const content = await decryptWithPrivateKey(creatorPrivateKey, encryptedBlobText);
+    const link = document.createElement('a');
+    // TODO: fix decrypted file format
+    link.href = window.URL.createObjectURL(new Blob([content], {type: "application/unknown"}));
+    link.download = contentHash;
+    link.click();
   };
 
   const hasPurchased = (creation: any) => {
