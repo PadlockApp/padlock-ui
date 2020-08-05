@@ -925,7 +925,7 @@ function Browse() {
   };
 
   const { data } = useQuery(GET_CREATIONS, {
-    pollInterval: 500,
+    pollInterval: 10000,
   });
 
   useEffect(() => {
@@ -950,26 +950,47 @@ function Browse() {
     });
   }, [data]);
 
-  const purchase = async (contentId: string, amount: number) => {
+  const purchase = async (creation: any) => {
     try {
+      const contentId = creation.id;
+      const amount = creation.price;
+      const value = Eth.toEthUnits(amount);
       const from = (eth?.web3.currentProvider as any).selectedAddress;
       const padlockContractAddress = eth?.contract.options.address;
+      const recipient = secretPair?.address;
+
+      if (!recipient || !contentId) {
+        notify('Error buying content!', 'is-danger');
+        return
+      }
       await eth?.paymentContract.methods
         .approve(padlockContractAddress, Eth.toEthUnits(amount))
         .send({ from });
+      notify(`Thanks for your payment, please sign the order transaction to finalize.`);
       await eth?.contract.methods
-        .order(Number(contentId), secretPair?.address)
+        .order(parseInt(contentId), recipient)
         .send({ from });
-      notify('Content purchased!');
+      notify(`Thanks for your purchase, your content is being unlocked.`);
     } catch (error) {
-      notify('Error purchasing content!', 'is-danger');
+      notify('Error buying content!', 'is-danger');
     }
   };
 
   const download = async (contentId: string, contentHash: string) => {
+    debugger
     const blob = await ffs?.get(contentHash);
     // TODO: convert to file, decrypt, and download
   };
+
+  const hasPurchased = (creation: any) => {
+    const user = (eth?.web3.currentProvider as any).selectedAddress;
+    const owned = creation.orders.some(
+      (order) =>
+        order.buyer.toLowerCase() === //this is already lower but to be sure
+        user.toLowerCase()
+    )
+    return owned;
+  }
 
   return (
     <div>
@@ -1056,11 +1077,7 @@ function Browse() {
                       <span className="tag is-medium is-warning subtitle">
                         {e.price} DAI
                       </span>
-                      {e.orders.some(
-                        (order) =>
-                          order.buyer ===
-                          (eth?.web3.currentProvider as any).selectedAddress
-                      ) ? (
+                      {hasPurchased(e) ? (
                         <button
                           onClick={() => download(e.id, e.hash)}
                           className="button is-fullwidth is-primary is-rounded"
@@ -1069,7 +1086,7 @@ function Browse() {
                         </button>
                       ) : (
                         <button
-                          onClick={() => purchase(e.id, e.price)}
+                          onClick={() => purchase(e)}
                           className="button is-fullwidth is-primary is-rounded"
                         >
                           Buy
