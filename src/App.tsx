@@ -98,6 +98,7 @@ function App() {
                         <img
                           className="is-rounded"
                           src={imgUrl}
+                          style={{ height: '128px' }}
                           alt="user profile"
                         />
                       </figure>
@@ -707,6 +708,7 @@ function Account() {
   }, [space]);
 
   const updateAccount = async () => {
+    // Beyond MVP
     // TODO: check name is not taken
     try {
       setIsWorking(true);
@@ -942,10 +944,19 @@ function Browse() {
         );
         metadata = data;
       } catch (e) {}
-      const profile: { name: string } = await getProfile(creation.creator);
+      const loadedProfile = await getProfile(creation.creator);
+      const profile: { name: string; profileImgUrl: string } = {
+        name: loadedProfile['name'] ? loadedProfile['name'] : 'anonymous',
+        profileImgUrl: loadedProfile['profile-img-hash']
+          ? `https://gateway.pinata.cloud/ipfs/${loadedProfile['profile-img-hash']}`
+          : 'https://i.imgur.com/4b2rBVh.png',
+      };
       setCreationData((state: any) => ({
         ...state,
-        [creation.id]: { profile, metadata },
+        [creation.id]: {
+          profile,
+          metadata,
+        },
       }));
     });
   }, [data]);
@@ -961,12 +972,14 @@ function Browse() {
 
       if (!recipient || !contentId) {
         notify('Error buying content!', 'is-danger');
-        return
+        return;
       }
       await eth?.paymentContract.methods
         .approve(padlockContractAddress, Eth.toEthUnits(amount))
         .send({ from });
-      notify(`Thanks for your payment, please sign the order transaction to finalize.`);
+      notify(
+        `Thanks for your payment, please sign the order transaction to finalize.`
+      );
       await eth?.contract.methods
         .order(parseInt(contentId), recipient)
         .send({ from });
@@ -977,7 +990,7 @@ function Browse() {
   };
 
   const download = async (contentId: string, contentHash: string) => {
-    debugger
+    debugger;
     const blob = await ffs?.get(contentHash);
     // TODO: convert to file, decrypt, and download
   };
@@ -985,12 +998,10 @@ function Browse() {
   const hasPurchased = (creation: any) => {
     const user = (eth?.web3.currentProvider as any).selectedAddress;
     const owned = creation.orders.some(
-      (order) =>
-        order.buyer.toLowerCase() === //this is already lower but to be sure
-        user.toLowerCase()
-    )
+      (order) => order.buyer.toLowerCase() === user.toLowerCase() //this is already lower but to be sure
+    );
     return owned;
-  }
+  };
 
   return (
     <div>
@@ -1036,23 +1047,49 @@ function Browse() {
                     </figure>
                   </div>
                   <div className="card-content">
-                    <div className="content">
+                    <div className="media">
+                      <div className="media-left">
+                        <figure
+                          className="image is-24x24"
+                          style={{ marginRight: '-7px', marginTop: '-2px' }}
+                        >
+                          <img
+                            className="is-rounded"
+                            src={creationData[e.id]?.profile?.profileImgUrl}
+                            style={{ height: '24px' }}
+                            alt="Creator profile"
+                          />
+                        </figure>
+                      </div>
                       <div className="media-content">
-                        <div>
-                          <label className="checkbox subtitle is-6">
-                            <input
-                              type="checkbox"
-                              disabled
-                              checked={creationData[e.id]?.metadata?.nsfw}
-                            />
-                            &nbsp;
-                            <span>NSFW</span>
-                          </label>
-                        </div>
-                        <div>
-                          <label className="subtitle is-6">
-                            <span>Sales: {e.orders.length}</span>
-                          </label>
+                        <p className="title is-6">
+                          {creationData[e.id]?.profile?.name}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="content">
+                      <div className="title is-5">
+                        {creationData[e.id]?.metadata?.title}
+                      </div>
+                      <div className="content">
+                        {creationData[e.id]?.metadata?.description}
+                      </div>
+
+                      <div className="content">
+                        <div className="field is-grouped is-grouped-multiline">
+                          <div className="control">
+                            <div className="tags has-addons">
+                              <span className="tag">Sales</span>
+                              <span className="tag is-info">
+                                {e.orders.length}
+                              </span>
+                            </div>
+                          </div>
+                          {creationData[e.id]?.metadata?.nsfw && (
+                            <span className="tag is-danger is-light is-rounded">
+                              NSFW
+                            </span>
+                          )}
                         </div>
                         <div className="tags">
                           {creationData[e.id]?.metadata?.categories.map(
@@ -1063,17 +1100,7 @@ function Browse() {
                             )
                           )}
                         </div>
-                        <p className="subtitle is-6">
-                          {creationData[e.id]?.profile?.name}
-                        </p>
                       </div>
-                      <div className="title is-5">
-                        {creationData[e.id]?.metadata?.title}
-                      </div>
-                      <div className="content">
-                        {creationData[e.id]?.metadata?.description}
-                      </div>
-
                       <span className="tag is-medium is-warning subtitle">
                         {e.price} DAI
                       </span>
