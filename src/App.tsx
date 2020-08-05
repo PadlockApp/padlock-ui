@@ -292,6 +292,7 @@ function Publish() {
           description,
           categories: categories.filter((e) => e.length !== 0),
           nsfw,
+          fileType: file?.type,
         },
       };
       history.push(to);
@@ -483,6 +484,7 @@ function Review(props: any) {
       description: string;
       categories: string[];
       nsfw: boolean;
+      fileType: string;
     };
   } = props.location;
 
@@ -990,15 +992,20 @@ function Browse() {
     }
   };
 
-  const download = async (contentId: string, contentHash: string) => {
-    debugger;
+  const download = async (creation: any, fileType: string) => {
+    const { hash: contentHash } = creation;
     const byte = await ffs?.get(contentHash);
     const encryptedBlob = new Blob([byte as Uint8Array]);
     const encryptedBlobText = await encryptedBlob.text();
-    const content = await decryptWithPrivateKey(creatorPrivateKey, encryptedBlobText);
+    const content = await decryptWithPrivateKey(
+      creatorPrivateKey,
+      encryptedBlobText
+    );
     const link = document.createElement('a');
     // TODO: fix decrypted file format
-    link.href = window.URL.createObjectURL(new Blob([content], {type: "application/unknown"}));
+    link.href = window.URL.createObjectURL(
+      new Blob([content], { type: fileType })
+    );
     link.download = contentHash;
     link.click();
   };
@@ -1114,7 +1121,9 @@ function Browse() {
                       </span>
                       {hasPurchased(e) ? (
                         <button
-                          onClick={() => download(e.id, e.hash)}
+                          onClick={() =>
+                            download(e, creationData[e.id]?.metadata?.fileType)
+                          }
                           className="button is-fullwidth is-primary is-rounded"
                         >
                           Download
