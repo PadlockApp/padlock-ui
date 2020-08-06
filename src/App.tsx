@@ -909,12 +909,6 @@ function Browse() {
     }
   `;
 
-  /*
-  todo get private key from secret network if holding NFT, and decrypt
-  const privateKey = '0x7934533cd797cfe47d7b5c43ddcf80ee1605aa2d209137bbf1c8b5bb4003f194';
-
-      const decrypted = await decryptWithPrivateKey(privateKey, encryptedString)
-  */
   async function decryptWithPrivateKey(privateKey: string, encrypted: string) {
     const encryptedObject = EthCrypto.cipher.parse(encrypted);
     const decryptedString: string = await EthCrypto.decryptWithPrivateKey(

@@ -1,4 +1,7 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# Padlock-UI is the front end to the ETH Global HackFS project.
+
+Typescript-based React w/ Redux Saga for state management.
+
 
 ## Available Scripts
 
